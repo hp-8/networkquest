@@ -5,13 +5,33 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { accounts, eventsAround, otherAttendees, companyDomain, boardyThreads, boardyThreadList, detectBoardyAddress, sendToBoardy, thread } from './google.js';
 import { startLive, isBoardy } from './live.js';
-import { guard } from './webauth.js';
+import { guard, sessionEmail } from './webauth.js';
 import { PUBLIC_URL } from './paths.js';
 import { collect as collectAskAll, collectRoster } from './askall.js';
 import { collectRequests, autoPrep, goingQuiet, requestPrep, requestFollowups, prepRequested, pendingFollow } from './requests.js';
 import * as db from './db.js';
 
-const PAGE = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public', 'index.html');
+const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
+const PAGE = path.join(PUBLIC_DIR, 'index.html');
+const LANDING = path.join(PUBLIC_DIR, 'landing.html');
+const FONTS = { '/fonts/inter-latin.woff2': 'font/woff2', '/fonts/Inter-OFL.txt': 'text/plain; charset=utf-8' };
+
+// The public landing page and its font need no sign-in.
+function servePublic(req, res, url, hosted) {
+  if (req.method !== 'GET') return false;
+  const signedOutHome = hosted && url.pathname === '/' && !sessionEmail(req);
+  if (url.pathname === '/welcome' || signedOutHome) {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+    res.end(fs.readFileSync(LANDING));
+    return true;
+  }
+  if (FONTS[url.pathname]) {
+    res.writeHead(200, { 'Content-Type': FONTS[url.pathname], 'Cache-Control': 'public, max-age=31536000, immutable' });
+    res.end(fs.readFileSync(path.join(PUBLIC_DIR, url.pathname)));
+    return true;
+  }
+  return false;
+}
 
 // Open pages subscribe here (Server-Sent Events) and reload when a Boardy email arrives.
 const listeners = new Set();
@@ -495,12 +515,14 @@ export function serve(port = Number(process.env.PORT) || 3000) {
       res.setHeader('X-Content-Type-Options', 'nosniff');
       res.setHeader('Referrer-Policy', 'same-origin');
       if (url.pathname === '/healthz') { res.writeHead(200); return res.end('ok'); }
+      if (servePublic(req, res, url, true)) return;
       try {
         if (await guard(req, res, url, { onConnected: account => onAccountConnected(account) })) return;
       } catch (e) {
         res.writeHead(500); return res.end('Server error');
       }
     }
+    if (!hosted && servePublic(req, res, url, false)) return;
     if (req.method === 'GET' && url.pathname === '/') {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       return res.end(fs.readFileSync(PAGE));

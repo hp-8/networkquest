@@ -1,0 +1,607 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-03T17:55:44.258Z",
+  "title": "Design System: NetworkQuest",
+  "extensions": {
+    "colorMeta": {
+      "paper-ground": {
+        "role": "neutral",
+        "displayName": "Warm Paper Ground",
+        "canonical": "oklch(95.8% 0.007 88.6)",
+        "tonalRamp": [
+          "#0b0b0a",
+          "#252422",
+          "#41403d",
+          "#5f5d5a",
+          "#82807c",
+          "#a6a4a1",
+          "#cbcac8",
+          "#efeeed"
+        ]
+      },
+      "card-paper": {
+        "role": "neutral",
+        "displayName": "Card Paper",
+        "canonical": "oklch(99.4% 0.006 84.6)",
+        "tonalRamp": [
+          "#0b0b0a",
+          "#252422",
+          "#41403d",
+          "#5f5d5a",
+          "#82807d",
+          "#a6a4a2",
+          "#cbcac8",
+          "#efeeed"
+        ]
+      },
+      "warm-ink": {
+        "role": "neutral",
+        "displayName": "Warm Ink",
+        "canonical": "oklch(25.2% 0.006 91.6)",
+        "tonalRamp": [
+          "#0b0b0a",
+          "#242422",
+          "#40403d",
+          "#5f5d5a",
+          "#81807d",
+          "#a5a4a2",
+          "#cbcac8",
+          "#efeeed"
+        ]
+      },
+      "muted-ink": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "oklch(50.1% 0.013 84.6)",
+        "tonalRamp": [
+          "#0c0b09",
+          "#262420",
+          "#423f3a",
+          "#615d56",
+          "#848078",
+          "#a7a49e",
+          "#cccac5",
+          "#f0eeeb"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(89.8% 0.016 86.4)",
+        "tonalRamp": [
+          "#0c0b09",
+          "#262420",
+          "#423f39",
+          "#615d55",
+          "#848077",
+          "#a8a49d",
+          "#cdcac5",
+          "#f0eeeb"
+        ]
+      },
+      "past-ground": {
+        "role": "neutral",
+        "displayName": "Past Ground",
+        "canonical": "oklch(93.1% 0.010 87.5)",
+        "tonalRamp": [
+          "#0c0b0a",
+          "#252421",
+          "#41403c",
+          "#605d58",
+          "#82807a",
+          "#a6a4a0",
+          "#cccac7",
+          "#efeeec"
+        ]
+      },
+      "indigo": {
+        "role": "primary",
+        "displayName": "Calm Indigo",
+        "canonical": "oklch(53.2% 0.186 274.0)",
+        "tonalRamp": [
+          "#050624",
+          "#181c51",
+          "#2d3583",
+          "#444fb8",
+          "#6373e4",
+          "#8b9df7",
+          "#bac8fe",
+          "#eaeefe"
+        ]
+      },
+      "indigo-hover": {
+        "role": "primary",
+        "displayName": "Calm Indigo, Hover",
+        "canonical": "oklch(47.4% 0.183 273.1)",
+        "tonalRamp": [
+          "#050724",
+          "#171d51",
+          "#2c3582",
+          "#4350b7",
+          "#6174e3",
+          "#8a9ef6",
+          "#bac8fd",
+          "#e9eeff"
+        ]
+      },
+      "amber": {
+        "role": "secondary",
+        "displayName": "Deep Amber",
+        "canonical": "oklch(52.1% 0.116 57.0)",
+        "tonalRamp": [
+          "#170600",
+          "#391b02",
+          "#5f330b",
+          "#884c18",
+          "#b06e3b",
+          "#cd9871",
+          "#eac1a5",
+          "#feeadd"
+        ]
+      },
+      "done-stone": {
+        "role": "neutral",
+        "displayName": "Done Stone",
+        "canonical": "oklch(88.0% 0.016 86.4)",
+        "tonalRamp": [
+          "#0c0b09",
+          "#262420",
+          "#423f39",
+          "#615d55",
+          "#848077",
+          "#a8a49d",
+          "#cdcac5",
+          "#f0eeea"
+        ]
+      },
+      "done-ink": {
+        "role": "neutral",
+        "displayName": "Done Ink",
+        "canonical": "oklch(34.1% 0.009 88.7)",
+        "tonalRamp": [
+          "#0c0b0a",
+          "#252421",
+          "#41403c",
+          "#5f5d59",
+          "#82807b",
+          "#a6a4a0",
+          "#cccac7",
+          "#efeeec"
+        ]
+      },
+      "night-ground": {
+        "role": "neutral",
+        "displayName": "Night Ground",
+        "canonical": "oklch(19.5% 0.004 106.8)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242423",
+          "#40403e",
+          "#5e5e5b",
+          "#80807e",
+          "#a5a5a3",
+          "#cacac9",
+          "#eeeeed"
+        ]
+      },
+      "night-card": {
+        "role": "neutral",
+        "displayName": "Night Card",
+        "canonical": "oklch(23.0% 0.006 106.8)",
+        "tonalRamp": [
+          "#0b0b0a",
+          "#242422",
+          "#40403d",
+          "#5e5e5b",
+          "#80807d",
+          "#a5a5a2",
+          "#cbcbc8",
+          "#eeeeed"
+        ]
+      },
+      "night-ink": {
+        "role": "neutral",
+        "displayName": "Night Ink",
+        "canonical": "oklch(93.1% 0.010 87.5)",
+        "tonalRamp": [
+          "#0c0b0a",
+          "#252421",
+          "#41403c",
+          "#605d58",
+          "#82807a",
+          "#a6a4a0",
+          "#cccac7",
+          "#efeeec"
+        ]
+      },
+      "night-muted": {
+        "role": "neutral",
+        "displayName": "Night Muted Ink",
+        "canonical": "oklch(69.7% 0.015 84.6)",
+        "tonalRamp": [
+          "#0c0b09",
+          "#262420",
+          "#423f39",
+          "#615d55",
+          "#848077",
+          "#a8a49d",
+          "#cdcac5",
+          "#f0eeeb"
+        ]
+      },
+      "night-hairline": {
+        "role": "neutral",
+        "displayName": "Night Hairline",
+        "canonical": "oklch(29.7% 0.007 95.3)",
+        "tonalRamp": [
+          "#0b0b0a",
+          "#242422",
+          "#40403d",
+          "#5f5e5a",
+          "#81807c",
+          "#a5a5a1",
+          "#cbcac8",
+          "#efeeed"
+        ]
+      },
+      "night-past": {
+        "role": "neutral",
+        "displayName": "Night Past Ground",
+        "canonical": "oklch(21.3% 0.004 106.7)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242423",
+          "#40403e",
+          "#5e5e5c",
+          "#80807e",
+          "#a5a5a3",
+          "#cacac9",
+          "#eeeeed"
+        ]
+      },
+      "night-indigo": {
+        "role": "primary",
+        "displayName": "Night Indigo",
+        "canonical": "oklch(71.7% 0.149 278.1)",
+        "tonalRamp": [
+          "#07081f",
+          "#1d1e48",
+          "#343775",
+          "#4e52a6",
+          "#6f75d0",
+          "#959ee7",
+          "#bec6fd",
+          "#eaedff"
+        ]
+      },
+      "night-indigo-ink": {
+        "role": "primary",
+        "displayName": "Night Indigo Ink",
+        "canonical": "oklch(19.9% 0.048 277.6)",
+        "tonalRamp": [
+          "#090b12",
+          "#212330",
+          "#3b3e52",
+          "#575c76",
+          "#797e9b",
+          "#9fa3ba",
+          "#c6c9db",
+          "#eceef9"
+        ]
+      },
+      "night-indigo-hover": {
+        "role": "primary",
+        "displayName": "Night Indigo, Hover",
+        "canonical": "oklch(77.6% 0.116 279.5)",
+        "tonalRamp": [
+          "#08091b",
+          "#1f2040",
+          "#383a69",
+          "#525696",
+          "#7379be",
+          "#9a9fd8",
+          "#c2c7f2",
+          "#ebedfe"
+        ]
+      },
+      "night-amber": {
+        "role": "secondary",
+        "displayName": "Night Amber",
+        "canonical": "oklch(76.2% 0.108 66.8)",
+        "tonalRamp": [
+          "#150800",
+          "#361e01",
+          "#5a3709",
+          "#815117",
+          "#a8743a",
+          "#c69b70",
+          "#e4c4a5",
+          "#feebd8"
+        ]
+      },
+      "night-amber-ink": {
+        "role": "secondary",
+        "displayName": "Night Amber Ink",
+        "canonical": "oklch(23.4% 0.039 67.2)",
+        "tonalRamp": [
+          "#0f0a06",
+          "#2b221a",
+          "#4a3d30",
+          "#6b5a49",
+          "#8f7d6a",
+          "#b1a293",
+          "#d4c8bd",
+          "#f5ede6"
+        ]
+      },
+      "night-done-stone": {
+        "role": "neutral",
+        "displayName": "Night Done Stone",
+        "canonical": "oklch(40.1% 0.013 95.4)",
+        "tonalRamp": [
+          "#0c0b09",
+          "#252420",
+          "#41403a",
+          "#5f5e56",
+          "#828078",
+          "#a6a59e",
+          "#cccac6",
+          "#efeeeb"
+        ]
+      },
+      "night-done-ink": {
+        "role": "neutral",
+        "displayName": "Night Done Ink",
+        "canonical": "oklch(93.2% 0.013 86.8)",
+        "tonalRamp": [
+          "#0c0b09",
+          "#252420",
+          "#423f3a",
+          "#605d57",
+          "#838078",
+          "#a7a49e",
+          "#cccac6",
+          "#f0eeeb"
+        ]
+      },
+      "on-color": {
+        "role": "neutral",
+        "displayName": "On-Color White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#0b0b0a",
+          "#252422",
+          "#41403d",
+          "#5f5d5a",
+          "#82807d",
+          "#a6a4a2",
+          "#cbcac8",
+          "#efeeed"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The two-tone NetworkQuest wordmark on the landing page."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "The one-line pitch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running copy and the detail line."
+      },
+      "title": {
+        "displayName": "Day Numeral",
+        "purpose": "Dates inside day cells."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Legend, button text, footer."
+      },
+      "chip": {
+        "displayName": "Chip",
+        "purpose": "Initials or first names inside meeting chips."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Weekday letters and hour marks."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ambient",
+        "value": "0 1px 2px rgba(40,35,25,.05), 0 6px 20px rgba(40,35,25,.06)",
+        "purpose": "Primary button at rest (light)."
+      },
+      {
+        "name": "ambient-night",
+        "value": "0 1px 2px rgba(0,0,0,.35)",
+        "purpose": "Primary button at rest (dark)."
+      },
+      {
+        "name": "ambient-app",
+        "value": "0 1px 2px rgba(40,35,25,.04), 0 4px 16px rgba(40,35,25,.05)",
+        "purpose": "App cards and tiles (dark: 0 1px 2px rgba(0,0,0,.3))."
+      },
+      {
+        "name": "lift",
+        "value": "0 6px 16px rgba(30,25,15,.18)",
+        "purpose": "Chip on hover, focus or selection, with translateY(-2px)."
+      },
+      {
+        "name": "overlay-menu",
+        "value": "0 12px 32px rgba(0,0,0,.14)",
+        "purpose": "App popover menus."
+      },
+      {
+        "name": "overlay-dialog",
+        "value": "0 24px 80px rgba(0,0,0,.25)",
+        "purpose": "App dialogs."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "Exponential ease-out for every landing transition and animation."
+      },
+      {
+        "name": "button",
+        "value": "background .2s, transform .2s",
+        "purpose": "Primary button hover and press."
+      },
+      {
+        "name": "chip-lift",
+        "value": "transform .25s, box-shadow .25s",
+        "purpose": "Chip hover, focus and selection lift."
+      },
+      {
+        "name": "settle",
+        "value": ".9s from opacity .75 translateY(12px); delay 120ms + 45ms per day from today",
+        "purpose": "Chips ripple outward from today on load; removed under prefers-reduced-motion."
+      },
+      {
+        "name": "app-state",
+        "value": ".15s",
+        "purpose": "App button border, note actions, tile hover (default easing)."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "max-width: 760px"
+      },
+      {
+        "name": "short-desktop",
+        "value": "max-height: 560px and min-width: 761px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one filled indigo action per view, with an optional inline SVG icon.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\"><svg viewBox=\"0 0 16 16\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z\"/></svg>View on GitHub</a>",
+      "css": ":host{--bg:#f3f1ec;--card:#fffdf9;--ink:#23221f;--muted:#67635b;--line:#e2ddd2;--past:#ebe8e1;--accent:#4f5bd5;--accent-ink:#fff;--accent-hover:#3f4ac0;--warn:#9a5516;--warn-ink:#fff;--done:#dcd7cc;--done-ink:#3a3833;--shadow:0 1px 2px rgba(40,35,25,.05),0 6px 20px rgba(40,35,25,.06);--ease:cubic-bezier(.16,1,.3,1)} @media (prefers-color-scheme: dark){:host{--bg:#151513;--card:#1d1d1a;--ink:#ebe8e1;--muted:#a29d93;--line:#2e2d29;--past:#191917;--accent:#8f98ff;--accent-ink:#11132b;--accent-hover:#a7aeff;--warn:#e0a464;--warn-ink:#2a1a08;--done:#4a4840;--done-ink:#ece8df;--shadow:0 1px 2px rgba(0,0,0,.35)}} .ds-btn-primary{font-family:Inter,system-ui,-apple-system,\"Segoe UI\",sans-serif;display:inline-flex;align-items:center;gap:10px;text-decoration:none;background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:16px;padding:13px 20px;border-radius:12px;box-shadow:var(--shadow);transition:background .2s var(--ease),transform .2s var(--ease)} .ds-btn-primary svg{width:20px;height:20px;flex:none} .ds-btn-primary:hover{background:var(--accent-hover)} .ds-btn-primary:active{transform:translateY(1px)} .ds-btn-primary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}"
+    },
+    {
+      "name": "Quiet Link",
+      "kind": "button",
+      "refersTo": "link-quiet",
+      "description": "Secondary action as muted text beside the primary button.",
+      "html": "<a class=\"ds-link-quiet\" href=\"#\">Sign in</a>",
+      "css": ":host{--bg:#f3f1ec;--card:#fffdf9;--ink:#23221f;--muted:#67635b;--line:#e2ddd2;--past:#ebe8e1;--accent:#4f5bd5;--accent-ink:#fff;--accent-hover:#3f4ac0;--warn:#9a5516;--warn-ink:#fff;--done:#dcd7cc;--done-ink:#3a3833;--shadow:0 1px 2px rgba(40,35,25,.05),0 6px 20px rgba(40,35,25,.06);--ease:cubic-bezier(.16,1,.3,1)} @media (prefers-color-scheme: dark){:host{--bg:#151513;--card:#1d1d1a;--ink:#ebe8e1;--muted:#a29d93;--line:#2e2d29;--past:#191917;--accent:#8f98ff;--accent-ink:#11132b;--accent-hover:#a7aeff;--warn:#e0a464;--warn-ink:#2a1a08;--done:#4a4840;--done-ink:#ece8df;--shadow:0 1px 2px rgba(0,0,0,.35)}} .ds-link-quiet{font-family:Inter,system-ui,-apple-system,\"Segoe UI\",sans-serif;color:var(--muted);font-size:14px;text-underline-offset:3px;text-decoration-thickness:1px} .ds-link-quiet:hover{color:var(--ink)} .ds-link-quiet:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}"
+    },
+    {
+      "name": "Meeting Chips",
+      "kind": "chip",
+      "refersTo": "chip-needs",
+      "description": "Filled status chips: amber needs notes, indigo goal ahead, stone done.",
+      "html": "<div class=\"ds-row\"><button class=\"ds-chip-needs\" aria-label=\"Needs notes\">PN</button><button class=\"ds-chip-goal\" aria-label=\"Goal ahead\">AM</button><button class=\"ds-chip-done\" aria-label=\"Done\">DO</button></div>",
+      "css": ":host{--bg:#f3f1ec;--card:#fffdf9;--ink:#23221f;--muted:#67635b;--line:#e2ddd2;--past:#ebe8e1;--accent:#4f5bd5;--accent-ink:#fff;--accent-hover:#3f4ac0;--warn:#9a5516;--warn-ink:#fff;--done:#dcd7cc;--done-ink:#3a3833;--shadow:0 1px 2px rgba(40,35,25,.05),0 6px 20px rgba(40,35,25,.06);--ease:cubic-bezier(.16,1,.3,1)} @media (prefers-color-scheme: dark){:host{--bg:#151513;--card:#1d1d1a;--ink:#ebe8e1;--muted:#a29d93;--line:#2e2d29;--past:#191917;--accent:#8f98ff;--accent-ink:#11132b;--accent-hover:#a7aeff;--warn:#e0a464;--warn-ink:#2a1a08;--done:#4a4840;--done-ink:#ece8df;--shadow:0 1px 2px rgba(0,0,0,.35)}} .ds-row{display:flex;gap:8px;padding:12px;background:var(--bg)} .ds-chip-needs{font-family:Inter,system-ui,-apple-system,\"Segoe UI\",sans-serif;display:inline-grid;place-items:center;width:44px;height:40px;border:0;border-radius:7px;font-size:12px;font-weight:700;letter-spacing:.02em;line-height:1;cursor:pointer;transition:transform .25s var(--ease),box-shadow .25s var(--ease)} .ds-chip-needs:hover,.ds-chip-needs:focus-visible,.ds-chip-needs[aria-pressed=\"true\"]{transform:translateY(-2px);box-shadow:0 6px 16px rgba(30,25,15,.18)} .ds-chip-needs:focus-visible{outline:2px solid var(--accent);outline-offset:2px} .ds-chip-goal{font-family:Inter,system-ui,-apple-system,\"Segoe UI\",sans-serif;display:inline-grid;place-items:center;width:44px;height:40px;border:0;border-radius:7px;font-size:12px;font-weight:700;letter-spacing:.02em;line-height:1;cursor:pointer;transition:transform .25s var(--ease),box-shadow .25s var(--ease)} .ds-chip-goal:hover,.ds-chip-goal:focus-visible,.ds-chip-goal[aria-pressed=\"true\"]{transform:translateY(-2px);box-shadow:0 6px 16px rgba(30,25,15,.18)} .ds-chip-goal:focus-visible{outline:2px solid var(--accent);outline-offset:2px} .ds-chip-done{font-family:Inter,system-ui,-apple-system,\"Segoe UI\",sans-serif;display:inline-grid;place-items:center;width:44px;height:40px;border:0;border-radius:7px;font-size:12px;font-weight:700;letter-spacing:.02em;line-height:1;cursor:pointer;transition:transform .25s var(--ease),box-shadow .25s var(--ease)} .ds-chip-done:hover,.ds-chip-done:focus-visible,.ds-chip-done[aria-pressed=\"true\"]{transform:translateY(-2px);box-shadow:0 6px 16px rgba(30,25,15,.18)} .ds-chip-done:focus-visible{outline:2px solid var(--accent);outline-offset:2px} .ds-chip-needs{background:var(--warn);color:var(--warn-ink)} .ds-chip-goal{background:var(--accent);color:var(--accent-ink)} .ds-chip-done{background:var(--done);color:var(--done-ink)}"
+    },
+    {
+      "name": "Day Cell",
+      "kind": "custom",
+      "refersTo": "day-cell",
+      "description": "Signature calendar cell: past, today and upcoming states, with a chip placed by hour.",
+      "html": "<div class=\"ds-strip\"><div class=\"ds-day ds-past\"><span>M</span><b>2</b></div><div class=\"ds-day ds-today\"><span>T</span><b>3</b></div><div class=\"ds-day\"><span>W</span><b>4</b><span class=\"ds-mini\">AM</span></div></div>",
+      "css": ":host{--bg:#f3f1ec;--card:#fffdf9;--ink:#23221f;--muted:#67635b;--line:#e2ddd2;--past:#ebe8e1;--accent:#4f5bd5;--accent-ink:#fff;--accent-hover:#3f4ac0;--warn:#9a5516;--warn-ink:#fff;--done:#dcd7cc;--done-ink:#3a3833;--shadow:0 1px 2px rgba(40,35,25,.05),0 6px 20px rgba(40,35,25,.06);--ease:cubic-bezier(.16,1,.3,1)} @media (prefers-color-scheme: dark){:host{--bg:#151513;--card:#1d1d1a;--ink:#ebe8e1;--muted:#a29d93;--line:#2e2d29;--past:#191917;--accent:#8f98ff;--accent-ink:#11132b;--accent-hover:#a7aeff;--warn:#e0a464;--warn-ink:#2a1a08;--done:#4a4840;--done-ink:#ece8df;--shadow:0 1px 2px rgba(0,0,0,.35)}} .ds-strip{font-family:Inter,system-ui,-apple-system,\"Segoe UI\",sans-serif;display:grid;grid-template-columns:repeat(3,64px);gap:4px;padding:40px 16px 16px;background:var(--bg)} .ds-day{position:relative;height:150px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 3px;text-align:center;font-size:11px;line-height:1.2;color:var(--muted);font-variant-numeric:tabular-nums} .ds-day b{display:block;font-size:13px;color:var(--ink);font-weight:600} .ds-past{background:var(--past)} .ds-today{border-color:var(--ink)} .ds-today::before{content:\"\";position:absolute;left:-4px;top:-34px;bottom:-6px;width:2px;margin-left:-1px;background:var(--ink);border-radius:2px} .ds-mini{position:absolute;left:3px;right:3px;top:70px;height:36px;display:grid;place-items:center;border-radius:7px;background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:700;letter-spacing:.02em}"
+    },
+    {
+      "name": "Status Legend",
+      "kind": "custom",
+      "refersTo": "chip-needs",
+      "description": "Square swatch plus label in the signal hue, split either side of today.",
+      "html": "<div class=\"ds-legend\"><span class=\"ds-back\"><i></i>Needs notes</span><span class=\"ds-ahead\"><i></i>Goals ahead</span></div>",
+      "css": ":host{--bg:#f3f1ec;--card:#fffdf9;--ink:#23221f;--muted:#67635b;--line:#e2ddd2;--past:#ebe8e1;--accent:#4f5bd5;--accent-ink:#fff;--accent-hover:#3f4ac0;--warn:#9a5516;--warn-ink:#fff;--done:#dcd7cc;--done-ink:#3a3833;--shadow:0 1px 2px rgba(40,35,25,.05),0 6px 20px rgba(40,35,25,.06);--ease:cubic-bezier(.16,1,.3,1)} @media (prefers-color-scheme: dark){:host{--bg:#151513;--card:#1d1d1a;--ink:#ebe8e1;--muted:#a29d93;--line:#2e2d29;--past:#191917;--accent:#8f98ff;--accent-ink:#11132b;--accent-hover:#a7aeff;--warn:#e0a464;--warn-ink:#2a1a08;--done:#4a4840;--done-ink:#ece8df;--shadow:0 1px 2px rgba(0,0,0,.35)}} .ds-legend{font-family:Inter,system-ui,-apple-system,\"Segoe UI\",sans-serif;display:flex;gap:28px;font-size:13px;font-weight:600;padding:12px;background:var(--bg)} .ds-legend span{display:flex;align-items:center;gap:7px} .ds-legend i{width:9px;height:9px;border-radius:3px;display:block} .ds-back{color:var(--warn)} .ds-back i{background:var(--warn)} .ds-ahead{color:var(--accent)} .ds-ahead i{background:var(--accent)}"
+    },
+    {
+      "name": "Footer",
+      "kind": "custom",
+      "refersTo": "footer",
+      "description": "Hairline-ruled boundaries footer carrying the not-affiliated statement.",
+      "html": "<footer class=\"ds-footer\"><p><strong>Not affiliated with Boardy.</strong> Independent side project.</p><p>Calendar read-only · Sends only after you confirm · MIT</p></footer>",
+      "css": ":host{--bg:#f3f1ec;--card:#fffdf9;--ink:#23221f;--muted:#67635b;--line:#e2ddd2;--past:#ebe8e1;--accent:#4f5bd5;--accent-ink:#fff;--accent-hover:#3f4ac0;--warn:#9a5516;--warn-ink:#fff;--done:#dcd7cc;--done-ink:#3a3833;--shadow:0 1px 2px rgba(40,35,25,.05),0 6px 20px rgba(40,35,25,.06);--ease:cubic-bezier(.16,1,.3,1)} @media (prefers-color-scheme: dark){:host{--bg:#151513;--card:#1d1d1a;--ink:#ebe8e1;--muted:#a29d93;--line:#2e2d29;--past:#191917;--accent:#8f98ff;--accent-ink:#11132b;--accent-hover:#a7aeff;--warn:#e0a464;--warn-ink:#2a1a08;--done:#4a4840;--done-ink:#ece8df;--shadow:0 1px 2px rgba(0,0,0,.35)}} .ds-footer{font-family:Inter,system-ui,-apple-system,\"Segoe UI\",sans-serif;display:flex;justify-content:space-between;gap:6px 32px;flex-wrap:wrap;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding:16px 0 0;background:var(--bg)} .ds-footer p{margin:0} .ds-footer strong{color:var(--ink);font-weight:600}"
+    },
+    {
+      "name": "Tab Navigation",
+      "kind": "nav",
+      "refersTo": "day-cell",
+      "description": "App tab pill: card fill, hairline, active tab on paper ground.",
+      "html": "<nav class=\"ds-nav\"><button class=\"ds-on\">Meetings</button><button>Network</button><button>Next steps</button></nav>",
+      "css": ":host{--bg:#f3f1ec;--card:#fffdf9;--ink:#23221f;--muted:#67635b;--line:#e2ddd2;--past:#ebe8e1;--accent:#4f5bd5;--accent-ink:#fff;--accent-hover:#3f4ac0;--warn:#9a5516;--warn-ink:#fff;--done:#dcd7cc;--done-ink:#3a3833;--shadow:0 1px 2px rgba(40,35,25,.05),0 6px 20px rgba(40,35,25,.06);--ease:cubic-bezier(.16,1,.3,1)} @media (prefers-color-scheme: dark){:host{--bg:#151513;--card:#1d1d1a;--ink:#ebe8e1;--muted:#a29d93;--line:#2e2d29;--past:#191917;--accent:#8f98ff;--accent-ink:#11132b;--accent-hover:#a7aeff;--warn:#e0a464;--warn-ink:#2a1a08;--done:#4a4840;--done-ink:#ece8df;--shadow:0 1px 2px rgba(0,0,0,.35)}} .ds-nav{font-family:Inter,system-ui,-apple-system,\"Segoe UI\",sans-serif;display:inline-flex;gap:2px;background:var(--card);border:1px solid var(--line);padding:3px;border-radius:11px} .ds-nav button{background:none;border:0;padding:5px 12px;color:var(--muted);font:inherit;font-size:14px;cursor:pointer;border-radius:8px} .ds-nav button:hover{color:var(--ink)} .ds-nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px} .ds-nav .ds-on{color:var(--ink);background:var(--bg);font-weight:600}"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "day-cell",
+      "description": "App field: paper-ground fill, hairline, 10px radius.",
+      "html": "<input class=\"ds-input\" placeholder=\"found automatically on Sync\">",
+      "css": ":host{--bg:#f3f1ec;--card:#fffdf9;--ink:#23221f;--muted:#67635b;--line:#e2ddd2;--past:#ebe8e1;--accent:#4f5bd5;--accent-ink:#fff;--accent-hover:#3f4ac0;--warn:#9a5516;--warn-ink:#fff;--done:#dcd7cc;--done-ink:#3a3833;--shadow:0 1px 2px rgba(40,35,25,.05),0 6px 20px rgba(40,35,25,.06);--ease:cubic-bezier(.16,1,.3,1)} @media (prefers-color-scheme: dark){:host{--bg:#151513;--card:#1d1d1a;--ink:#ebe8e1;--muted:#a29d93;--line:#2e2d29;--past:#191917;--accent:#8f98ff;--accent-ink:#11132b;--accent-hover:#a7aeff;--warn:#e0a464;--warn-ink:#2a1a08;--done:#4a4840;--done-ink:#ece8df;--shadow:0 1px 2px rgba(0,0,0,.35)}} .ds-input{font-family:Inter,system-ui,-apple-system,\"Segoe UI\",sans-serif;width:280px;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px} .ds-input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Desk Calendar",
+    "overview": "NetworkQuest looks like a well-kept paper calendar on a warm desk: off-white cards on a warm stone ground, dark warm ink, hairline rules, and two colored signals that say what you owe and what is coming. The landing page (`public/landing.html`) and the app (`public/index.html`) share this one world. The landing page shows the product's own mechanism, a 28-day window of day cells with meetings placed by hour, so the visual vocabulary is the app's vocabulary at a larger scale. It is not a separate marketing skin.\n\nDensity is calm and practical. Hierarchy comes from Inter's weight range (400 to 800) and from fill, not from extra hues, ornament or imagery. Depth is mostly tonal: cards lift off the ground through a lighter surface and a 1px hairline, with only a faint ambient shadow. Motion is short and settles with a long exponential ease-out, and it always turns off under reduced motion.\n\nDark mode is a first-class pair, not an inversion: a near-black warm ground, slightly raised cards, lighter indigo and amber, and dark ink on those fills.",
+    "keyCharacteristics": [
+      "Warm neutral ground and card, warm near-black ink; no cool greys.",
+      "Exactly two signal hues: amber for \"owed / behind\", indigo for \"ahead\" and the one action.",
+      "Rounded containers with a 1px hairline; radius grows with the container's size.",
+      "One typeface, Inter, self-hosted, with weight carrying hierarchy and tabular numerals for dates and hours.",
+      "Soft, ambient depth; a lift on hover, never a hard shadow.",
+      "Light and dark mode both fully specified through the same custom-property names."
+    ],
+    "rules": [
+      {
+        "name": "The Two Signals Rule",
+        "body": "Amber means owed, indigo means ahead or act. Finished work goes neutral stone. Do not add a third status hue.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paired Ink Rule",
+        "body": "Every colored fill has a paired ink token: white in light mode, and `night-indigo-ink` or `night-amber-ink` in dark. Never hard-code white text on a fill, because the dark-mode fills are light.",
+        "section": "colors"
+      },
+      {
+        "name": "The Contrast Floor Rule",
+        "body": "Amber and muted ink use the deepened landing values, which clear 4.5:1 as text and as chip grounds. Do not go back to the lighter originals for new surfaces.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Face Rule",
+        "body": "Inter only, self-hosted, never a system display face. Weight, size and color create hierarchy.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Time Rule",
+        "body": "Dates, day numerals and hours use tabular numerals so columns line up.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-At-Rest Rule",
+        "body": "Surfaces rest flat on tone and hairline. A shadow that is stronger than ambient appears only for hover, focus, selection or a floating layer.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do take every color from the shared custom-property names (`--bg`, `--card`, `--ink`, `--muted`, `--line`, `--accent`, `--warn`) so light and dark mode stay paired.",
+      "Do put text on a colored fill in that fill's ink token (white in light; `#11132b` on night indigo, `#2a1a08` on night amber).",
+      "Do use the deepened amber (#9a5516) and muted ink (#67635b) on new surfaces.",
+      "Do use the system ease `cubic-bezier(.16,1,.3,1)` for transitions (0.2s for buttons, 0.25s for chips), and disable motion under `prefers-reduced-motion`.",
+      "Do draw icons as inline SVG in `currentColor`, sized 20px inside buttons.",
+      "Do keep the \"Not affiliated with Boardy.\" line visible in the footer of every presented surface."
+    ],
+    "donts": [
+      "Don't add a third status hue; done is neutral stone.",
+      "Don't hard-code `#fff` text on indigo or amber; in dark mode those fills are light and white fails contrast.",
+      "Don't use hard offset shadows or heavy borders; depth is tone, hairline and soft ambient shadow.",
+      "Don't introduce a second typeface or fall back to a system display face for the wordmark."
+    ]
+  }
+}

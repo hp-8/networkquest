@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NetworkQuest</title>
+<meta name="description" content="Prep for every Boardy intro, write it up after, and send the notes back. Open source, zero dependencies. Not affiliated with Boardy.">
+<link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family:"Inter"; font-style:normal; font-weight:400 800; font-display:swap; src:url(/fonts/inter-latin.woff2) format("woff2"); }
+
+  :root {
+    --bg:#f3f1ec; --card:#fffdf9; --ink:#23221f; --muted:#67635b; --line:#e2ddd2; --past:#ebe8e1;
+    --accent:#4f5bd5; --accent-ink:#ffffff; --accent-hover:#3f4ac0;
+    /* Amber deepened from the app's #b4681f so white chip text clears 4.5:1. */
+    --warn:#9a5516; --warn-ink:#ffffff; --done:#dcd7cc; --done-ink:#3a3833;
+    --shadow:0 1px 2px rgba(40,35,25,.05), 0 6px 20px rgba(40,35,25,.06);
+    --ease:cubic-bezier(.16,1,.3,1);
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg:#151513; --card:#1d1d1a; --ink:#ebe8e1; --muted:#a29d93; --line:#2e2d29; --past:#191917;
+    --accent:#8f98ff; --accent-ink:#11132b; --accent-hover:#a7aeff;
+    --warn:#e0a464; --warn-ink:#2a1a08; --done:#4a4840; --done-ink:#ece8df;
+    --shadow:0 1px 2px rgba(0,0,0,.35);
+    color-scheme:dark;
+  } }
+
+  * { box-sizing:border-box; }
+  html, body { margin:0; height:100%; overflow:hidden; }
+  body {
+    background:var(--bg); color:var(--ink);
+    font:16px/1.5 "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-feature-settings:"cv11", "ss01"; -webkit-font-smoothing:antialiased;
+  }
+  ::selection { background:color-mix(in srgb, var(--accent) 28%, transparent); color:var(--ink); }
+  .pitch a { font-weight:600; text-decoration-color:color-mix(in srgb, var(--accent) 55%, transparent); }
+  .pitch a:hover { color:var(--accent); }
+  a { color:inherit; text-underline-offset:3px; text-decoration-thickness:1px; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:6px; }
+
+  .page {
+    height:100vh; height:100dvh;
+    display:grid; grid-template-rows:auto 1fr auto auto; grid-template-columns:minmax(0,1fr);
+    gap:clamp(14px, 2.4vh, 28px);
+    padding:clamp(20px, 5vh, 64px) clamp(16px, 5vw, 96px) clamp(16px, 3.6vh, 40px);
+  }
+
+  /* Top: the offer and the action */
+  .top { display:flex; justify-content:space-between; align-items:flex-end; gap:24px 48px; flex-wrap:wrap; }
+  h1 { font-size:clamp(40px, min(6.2vw, 10vh), 92px); line-height:.95; letter-spacing:-.04em; font-weight:800; margin:0 0 clamp(10px, 1.8vh, 20px); }
+  h1 span { color:var(--accent); }
+  .pitch { font-size:clamp(16px, min(1.6vw, 2.6vh), 22px); line-height:1.45; margin:0; max-width:38ch; text-wrap:balance; }
+  .actions { display:flex; align-items:center; gap:18px; }
+  .btn {
+    display:inline-flex; align-items:center; gap:10px; text-decoration:none;
+    background:var(--accent); color:var(--accent-ink); font-weight:600; font-size:clamp(15px, 1.2vw, 17px);
+    padding:13px 20px; border-radius:12px; box-shadow:var(--shadow);
+    transition:background .2s var(--ease), transform .2s var(--ease);
+  }
+  .btn:hover { background:var(--accent-hover); }
+  .btn:active { transform:translateY(1px); }
+  .btn svg { width:20px; height:20px; flex:none; }
+  .quiet { color:var(--muted); font-size:14px; }
+  .quiet:hover { color:var(--ink); }
+
+  /* The 28-day strip */
+  .window { position:relative; min-height:0; display:grid; grid-template-rows:auto 1fr; gap:10px; }
+  .legend { position:relative; height:20px; font-size:13px; font-weight:600; }
+  .legend span { position:absolute; top:0; white-space:nowrap; display:flex; align-items:center; gap:7px; }
+  .legend i { width:9px; height:9px; border-radius:3px; display:block; }
+  .legend .back { right:50%; margin-right:14px; color:var(--warn); }
+  .legend .back i { background:var(--warn); }
+  .legend .ahead { left:50%; margin-left:14px; color:var(--accent); }
+  .legend .ahead i { background:var(--accent); }
+
+  .strip { position:relative; display:grid; grid-template-columns:repeat(28, minmax(0,1fr)); gap:4px; min-height:0; }
+  .hr { position:absolute; right:calc(100% + 8px); font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .hr.h9 { top:34px; } .hr.h5 { top:calc(100% - 64px); }
+  .day {
+    position:relative; min-width:0; min-height:0; background:var(--card); border:1px solid var(--line); border-radius:10px;
+    padding:6px 3px; text-align:center; font-size:11px; line-height:1.2; color:var(--muted);
+    font-variant-numeric:tabular-nums;
+  }
+  .day.past { background:var(--past); }
+  .day b { display:block; font-size:13px; color:var(--ink); font-weight:600; }
+  .day.today { border-color:var(--ink); }
+  .day.today::before {
+    content:""; position:absolute; left:-4px; top:-34px; bottom:-6px; width:2px; margin-left:-1px; background:var(--ink); border-radius:2px;
+  }
+  .chip {
+    position:absolute; left:3px; right:3px; top:var(--y); height:clamp(34px, 12%, 64px);
+    border:0; border-radius:7px; padding:0; font:inherit; font-size:12px; font-weight:700; letter-spacing:.02em; line-height:1;
+    display:grid; place-items:center; text-align:center; cursor:pointer; overflow:hidden; text-overflow:ellipsis;
+    animation:settle .9s var(--ease) both; animation-delay:var(--d);
+    transition:transform .25s var(--ease), box-shadow .25s var(--ease);
+  }
+  .chip .nm { display:none; }
+  .chip.needs { background:var(--warn); color:var(--warn-ink); }
+  .chip.goal { background:var(--accent); color:var(--accent-ink); }
+  .chip.done { background:var(--done); color:var(--done-ink); }
+  .chip:hover, .chip:focus-visible, .chip[aria-pressed="true"] { transform:translateY(-2px); box-shadow:0 6px 16px rgba(30,25,15,.18); z-index:2; }
+  .chip:focus-visible { outline-offset:2px; }
+  @keyframes settle { from { opacity:.75; transform:translateY(12px); } to { opacity:1; transform:none; } }
+
+  .detail {
+    min-height:3em; margin:0; font-size:clamp(14px, 1.15vw, 16px); line-height:1.5; max-width:90ch;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .detail strong { font-weight:600; }
+  .detail .tag { font-weight:600; }
+  .detail .tag.needs { color:var(--warn); } .detail .tag.goal { color:var(--accent); }
+
+  footer { display:flex; justify-content:space-between; gap:6px 32px; flex-wrap:wrap; font-size:13px; color:var(--muted); border-top:1px solid var(--line); padding-top:clamp(10px, 1.8vh, 16px); }
+  footer p { margin:0; }
+  footer .short { display:none; }
+  footer strong { color:var(--ink); font-weight:600; }
+
+  /* Phones: the 28 days fold into four weeks; today starts the third row. */
+  @media (max-width: 760px) {
+    .top { display:block; }
+    .pitch { margin-bottom:16px; }
+    .actions { justify-content:space-between; }
+    .btn { flex:1; justify-content:center; }
+    .strip { grid-template-columns:repeat(7, minmax(0,1fr)); grid-template-rows:repeat(4, minmax(0,1fr)); gap:3px; }
+    .hr { display:none; }
+    .day { padding:3px 2px; font-size:10px; border-radius:8px; }
+    .day b { font-size:12px; }
+    .day.today::before { left:-3px; right:auto; top:-4px; bottom:auto; height:2px; width:calc(700% + 4px * 6 + 14px); margin:0; }
+    .chip { top:auto; bottom:3px; left:2px; right:2px; height:auto; min-height:28px; padding:4px; font-size:10.5px; letter-spacing:0; border-radius:5px; white-space:nowrap; place-items:center start; }
+    .chip .in { display:none; } .chip .nm { display:inline; }
+    .legend .back { right:auto; left:0; margin:0; }
+    .legend .ahead { left:auto; right:0; margin:0; }
+    .detail { -webkit-line-clamp:3; min-height:4.5em; }
+    footer { font-size:12px; }
+    footer .long { display:none; } footer .short { display:inline; }
+  }
+  @media (max-height: 560px) and (min-width: 761px) { .pitch { display:none; } }
+
+  @media (prefers-reduced-motion: reduce) { .chip { animation:none; transition:none; } .btn { transition:none; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <div>
+      <h1>Network<span>Quest</span></h1>
+      <p class="pitch"><a href="https://www.boardy.ai" rel="noopener">Boardy</a> sets up the intros. NetworkQuest is where you prep for each one, write it up after, and send the notes back.</p>
+    </div>
+    <div class="actions">
+      <a class="quiet" id="secondary" href="/login">Sign in</a>
+      <a class="btn" href="https://github.com/hp-8/networkquest">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+  </header>
+
+  <section class="window" aria-label="Sample: the 28 days NetworkQuest syncs">
+    <div class="legend" aria-hidden="true">
+      <span class="back"><i></i>Needs notes</span>
+      <span class="ahead"><i></i>Goals ahead</span>
+    </div>
+    <div class="strip" id="strip"><span class="hr h9" aria-hidden="true">9am</span><span class="hr h5" aria-hidden="true">5pm</span></div>
+  </section>
+
+  <p class="detail" id="detail" aria-live="polite"></p>
+
+  <footer>
+    <p><strong>Not affiliated with Boardy.</strong> <span class="long">An independent side project. I like what Boardy does and wanted this for myself.</span><span class="short">Independent side project.</span></p>
+    <p class="meta"><span class="long">Calendar read-only · Gmail reads Boardy threads only · Sends only after you confirm · MIT · Zero dependencies</span><span class="short">Read-only calendar · Sends only after you confirm · MIT</span></p>
+  </footer>
+</div>
+
+<script>
+  // Sample meetings, placed relative to today so the strip always looks current. All names are made up.
+  const MEETINGS = [
+    [-13, 11, 'done',  'Dana Okafor',   'Wrote up. Next step done: shared the hiring rubric.'],
+    [-11, 15, 'done',  'Marco Silva',   'Wrote up. Next step: intro to his design lead, sent.'],
+    [-9,  10, 'needs', 'Priya Nair',    'Runs ops at a 12-person logistics startup. Agreed: I send two analyst intros by Friday.'],
+    [-8,  16, 'done',  'Ken Watanabe',  'Wrote up. Value each way logged; nothing owed.'],
+    [-5,  13, 'needs', 'Lena Fischer',  'Raising a seed round for a climate data tool. Wants feedback on her deck.'],
+    [-3,   9, 'done',  'Omar Haddad',   'Wrote up. Next step: coffee again in January.'],
+    [-1,  14, 'needs', 'Sofia Russo',   'Product lead at a fintech. Offered beta users for my routing demo.'],
+    [1,   10, 'goal',  'Arjun Mehta',   'Goal: learn how he found his first ten design partners.'],
+    [3,   15, 'goal',  'Chloe Martin',  'Goal: ask whether her team would pilot the scheduler.'],
+    [6,   12, 'goal',  'Tomás Reyes',   'Goal: compare notes on hiring a first engineer.'],
+    [9,   11, 'goal',  'Hana Kim',      'Goal: get one honest critique of the landing page.'],
+    [12,  16, 'goal',  'Ben Adeyemi',   'Goal: find out what investors in his space ask about.'],
+  ];
+  const LABEL = { needs:'Needs notes', goal:'Goal ahead', done:'Done' };
+  const strip = document.getElementById('strip');
+  const detail = document.getElementById('detail');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const wd = new Intl.DateTimeFormat(undefined, { weekday:'narrow' });
+  const full = new Intl.DateTimeFormat(undefined, { weekday:'short', day:'numeric', month:'short' });
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+
+  for (let i = -14; i < 14; i++) {
+    const date = new Date(today); date.setDate(today.getDate() + i);
+    const day = document.createElement('div');
+    day.className = 'day' + (i < 0 ? ' past' : '') + (i === 0 ? ' today' : '');
+    day.innerHTML = `<span>${wd.format(date)}</span><b>${date.getDate()}</b>`;
+    for (const [off, hour, kind, name, note] of MEETINGS.filter(m => m[0] === i)) {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chip ' + kind;
+      chip.innerHTML = `<span class="in" aria-hidden="true">${name.split(' ').map(w => w[0]).join('')}</span><span class="nm" aria-hidden="true">${name.split(' ')[0]}</span>`;
+      chip.style.setProperty('--y', `calc(34px + (100% - 34px - 64px) * ${(hour - 9) / 8})`);
+      chip.style.setProperty('--d', reduce ? '0ms' : `${120 + Math.abs(off) * 45}ms`);
+      chip.setAttribute('aria-label', `${full.format(date)}, ${name}, ${LABEL[kind]}`);
+      const show = () => {
+        strip.querySelectorAll('[aria-pressed="true"]').forEach(c => c.setAttribute('aria-pressed', 'false'));
+        chip.setAttribute('aria-pressed', 'true');
+        detail.innerHTML = '';
+        const t = document.createElement('span'); t.className = 'tag ' + kind; t.textContent = LABEL[kind];
+        const s = document.createElement('strong'); s.textContent = `${name}, ${full.format(date)}`;
+        detail.append('Sample · ', t, ' · ', s, ' · ', note);
+      };
+      chip.addEventListener('mouseenter', show);
+      chip.addEventListener('focus', show);
+      chip.addEventListener('click', show);
+      if (off === -1) chip.dataset.start = '1';
+      day.append(chip);
+      day.addEventListener('click', e => { if (e.target === day || e.target.parentElement === day) show(); });
+    }
+    strip.append(day);
+  }
+
+  // Open on the most recent meeting that still needs notes.
+  strip.querySelector('[data-start]')?.dispatchEvent(new Event('click'));
+
+  // Locally there's no sign-in; link straight to the app instead.
+  if (['127.0.0.1', 'localhost'].includes(location.hostname)) {
+    const a = document.getElementById('secondary'); a.textContent = 'Open the app'; a.href = '/';
+  }
+</script>
+</body>
+</html>

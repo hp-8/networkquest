@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "ui\",sans-serif",
+        "createdAt": "2026-11-03T17:54:47.484Z",
+        "reason": "Claude: parser split the quoted \"Segoe UI\" fallback; DESIGN.md typography already declares Inter, system-ui, -apple-system, Segoe UI, sans-serif"
+      }
+    ]
+  }
+}
