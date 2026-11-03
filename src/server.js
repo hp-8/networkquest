@@ -480,7 +480,8 @@ const routes = {
     const sent = await sendToBoardy(from, db.setting('boardy'), b.subject, b.text);
     const kind = b.kind === 'ask' ? 'ask' : 'sent';
     // Asks keep the sending inbox and thread id so the reply can be found exactly.
-    const ref_id = kind === 'ask' ? `ask-thread-${from}|${sent.threadId}` : `sent-${Date.now()}`;
+    // A sent note remembers which note it was, so the app can mark it sent.
+    const ref_id = kind === 'ask' ? `ask-thread-${from}|${sent.threadId}` : b.noteId ? `sent-note-${Number(b.noteId)}-${Date.now()}` : `sent-${Date.now()}`;
     // An ask remembers its meeting so the answer fills that meeting's brief.
     const event_ref = kind === 'ask'
       ? (b.eventId || db.getPerson(b.email).entries.filter(e => e.kind === 'meeting' && e.occurred_at < new Date().toISOString()).at(-1)?.ref_id || null)

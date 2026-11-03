@@ -5,21 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NetworkQuest</title>
 <style>
-  /* Warm, low-contrast neutrals with one calm accent; soft tints tell the bento tiles apart. */
+  @font-face { font-family:"Inter"; font-style:normal; font-weight:400 800; font-display:swap; src:url(/fonts/inter-latin.woff2) format("woff2"); }
+  /* Tokens follow DESIGN.md: warm paper and ink, indigo for action and goals, amber for notes owed. */
   :root {
-    --bg:#f3f1ec; --card:#fffdf9; --ink:#23221f; --muted:#77736b; --line:#e7e2d8;
-    --accent:#4f5bd5; --accent-soft:#eceefd; --warn:#b4681f; --warn-soft:#fbf0e3; --danger:#b8423a;
+    --bg:#f3f1ec; --card:#fffdf9; --ink:#23221f; --muted:#67635b; --line:#e2ddd2;
+    --accent:#4f5bd5; --accent-soft:#eceefd; --accent-ink:#ffffff; --accent-hover:#3f4ac0;
+    --warn:#9a5516; --warn-soft:#fbf0e3; --danger:#b8423a;
+    --done:#dcd7cc; --done-ink:#3a3833;
     --t1:#eef3ec; --t2:#eef1f8; --t3:#f8f0ea; --t4:#f3eef7;
     --shadow:0 1px 2px rgba(40,35,25,.04), 0 4px 16px rgba(40,35,25,.05);
   }
   @media (prefers-color-scheme: dark) { :root {
-    --bg:#151513; --card:#1d1d1a; --ink:#ebe8e1; --muted:#9c978d; --line:#2e2d29;
-    --accent:#8f98ff; --accent-soft:#25274a; --warn:#e0a464; --warn-soft:#33281b; --danger:#e07a72;
+    --bg:#151513; --card:#1d1d1a; --ink:#ebe8e1; --muted:#a29d93; --line:#2e2d29;
+    --accent:#8f98ff; --accent-soft:#25274a; --accent-ink:#11132b; --accent-hover:#a7aeff;
+    --warn:#e0a464; --warn-soft:#33281b; --danger:#e07a72;
+    --done:#4a4840; --done-ink:#ece8df;
     --t1:#1c241c; --t2:#1b2029; --t3:#28201b; --t4:#231e29;
     --shadow:0 1px 2px rgba(0,0,0,.3);
   } }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.6 "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing:antialiased; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.6 "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; font-feature-settings:"cv11", "ss01"; -webkit-font-smoothing:antialiased; }
+  ::selection { background:color-mix(in srgb, var(--accent) 28%, transparent); color:var(--ink); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  a { text-underline-offset:3px; }
+  .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  .ic { width:16px; height:16px; flex:none; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; vertical-align:-3px; }
   header { position:sticky; top:0; z-index:5; display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:12px 24px;
     background:color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
   header h1 { font-size:16px; font-weight:700; letter-spacing:-.01em; margin:0 14px 0 0; }
@@ -29,8 +39,8 @@
   nav button.on { color:var(--ink); background:var(--bg); font-weight:600; }
   .spacer { flex:1; }
   main { max-width:1080px; margin:0 auto; padding:24px 24px 64px; }
-  h2 { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:32px 0 12px; }
-  h4 { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0 0 10px; }
+  h2 { font-size:18px; font-weight:700; letter-spacing:-.015em; color:var(--ink); margin:36px 0 12px; }
+  h4 { font-size:14px; font-weight:650; letter-spacing:-.005em; color:var(--ink); margin:0 0 10px; }
   .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 18px; box-shadow:var(--shadow); }
   .list { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:12px; }
   .stack > * + * { margin-top:10px; }
@@ -40,10 +50,11 @@
   .tag.warn { color:var(--warn); background:var(--warn-soft); }
   .tag.new { color:var(--accent); background:var(--accent-soft); font-weight:600; }
   button.btn, a.btn { display:inline-flex; align-items:center; white-space:nowrap; text-decoration:none; }
-  button.btn, a.btn { font:inherit; font-size:13px; padding:6px 12px; border-radius:9px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; transition:background .15s, border-color .15s; }
+  button.btn, a.btn { font:inherit; font-size:13px; padding:6px 12px; border-radius:10px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; gap:6px; transition:background .2s cubic-bezier(.16,1,.3,1), border-color .2s cubic-bezier(.16,1,.3,1); }
+  button.btn:disabled { opacity:.55; cursor:default; }
   button.btn:hover, a.btn:hover { border-color:color-mix(in srgb, var(--accent) 40%, var(--line)); }
-  button.primary, a.btn.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
-  button.primary:hover, a.btn.primary:hover { background:color-mix(in srgb, var(--accent) 88%, #000); }
+  button.primary, a.btn.primary { background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:600; }
+  button.primary:hover, a.btn.primary:hover { background:var(--accent-hover); border-color:var(--accent-hover); }
   button.danger { color:var(--danger); }
   button.ghost { border-color:transparent; background:transparent; color:var(--muted); }
   input, textarea, select { width:100%; font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:9px 11px; }
@@ -62,24 +73,24 @@
   .tile { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px 20px; box-shadow:var(--shadow); min-width:0; }
   .tile.span2 { grid-column:span 2; } .tile.span3 { grid-column:span 3; } .tile.span4 { grid-column:span 4; } .tile.tall { grid-row:span 2; }
   .tile.t1 { background:var(--t1); } .tile.t2 { background:var(--t2); } .tile.t3 { background:var(--t3); } .tile.t4 { background:var(--t4); }
-  .tile .kicker { font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:8px; }
+  .tile .kicker { font-size:14px; font-weight:650; color:var(--ink); margin-bottom:8px; }
   .tile p { margin:0 0 10px; } .tile p:last-child { margin-bottom:0; }
   .tile.tall3 { grid-row:span 3; }
   /* Month calendar tile */
   .cal-head { display:flex; align-items:center; gap:6px; margin-bottom:10px; }
   .cal-title { font-size:18px; font-weight:700; letter-spacing:-.01em; flex:1; }
   .cal-grid { display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:4px; }
-  .cal-dow { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); text-align:center; padding:2px 0 4px; }
+  .cal-dow { font-size:12px; font-weight:600; color:var(--muted); text-align:center; padding:2px 0 4px; }
   .cal-day { min-height:64px; border-radius:11px; padding:5px 6px; background:var(--bg); display:flex; flex-direction:column; gap:3px; min-width:0; }
   .cal-day.out { background:transparent; opacity:.4; }
   .cal-day .n { font-size:12px; color:var(--muted); font-weight:600; }
-  .cal-day.today { outline:2px solid var(--accent); outline-offset:-2px; }
-  .cal-day.today .n { color:var(--accent); }
+  .cal-day.today { outline:2px solid var(--ink); outline-offset:-2px; }
+  .cal-day.today .n { color:var(--ink); }
   .chip { display:flex; align-items:center; gap:4px; font-size:11px; line-height:1.2; padding:2px 5px; border-radius:7px; cursor:pointer;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis; background:var(--accent-soft); color:var(--accent); font-weight:600; }
   .chip:hover { filter:brightness(.96); }
   .chip.needs { background:var(--warn-soft); color:var(--warn); }
-  .chip.done { background:var(--t1); color:color-mix(in srgb, var(--ink) 75%, #3c8a4a); }
+  .chip.done { background:var(--done); color:var(--done-ink); }
   .chip .dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex:none; }
   .legend { display:flex; gap:12px; margin-top:10px; flex-wrap:wrap; }
   .legend span { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); }
@@ -111,8 +122,7 @@
   /* Person page */
   .phead { padding:22px 28px 18px; }
   .ptitle { font-size:15px; color:var(--ink); opacity:.85; margin-top:2px; }
-  .chip { font-size:12px; padding:3px 9px; border-radius:99px; background:var(--accent-soft); color:var(--accent); font-weight:600; white-space:nowrap; }
-  .chip.done { background:var(--t1); color:color-mix(in srgb, var(--ink) 70%, #3c8a4a); }
+  span.chip { font-size:12px; padding:3px 9px; border-radius:99px; display:inline-flex; cursor:default; }
   .chip.warn { background:var(--warn-soft); color:var(--warn); }
   .pleft { padding:24px 28px 32px !important; }
   .pcol { max-width:1040px; }
@@ -140,7 +150,7 @@
   .article { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:6px 22px 14px; font-size:15px; line-height:1.7; }
   .article section { padding:14px 0; border-bottom:1px solid var(--line); }
   .article p { margin:0 0 10px; } .article p:last-child { margin-bottom:0; }
-  .sec-label { font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0 0 6px; }
+  .sec-label { font-size:14px; font-weight:650; color:var(--ink); margin:0 0 6px; }
   .src-line { padding-top:10px; font-size:13px; }
   .pempty { border:1.5px dashed var(--line); border-radius:16px; padding:28px; text-align:center; }
   .tl-list { border:1px solid var(--line); border-radius:14px; background:var(--card); overflow:hidden; }
@@ -159,7 +169,7 @@
   .composer input, .composer select { font-size:13px; padding:7px 10px; }
   .note { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
   .note-body { white-space:pre-wrap; margin-top:4px; font-size:14px; line-height:1.6; }
-  .note-actions { opacity:0; transition:opacity .15s; } .note:hover .note-actions, .note:focus-within .note-actions { opacity:1; }
+  .note-actions { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
   .menu { position:relative; }
   .menu summary { list-style:none; } .menu summary::-webkit-details-marker { display:none; }
   .menu-pop { position:absolute; right:0; top:calc(100% + 6px); z-index:10; min-width:220px; background:var(--card); border:1px solid var(--line);
@@ -174,7 +184,7 @@
   .prep-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:18px; }
   .prep-grid:has(> :only-child) { grid-template-columns:1fr; }
   .idea { background:var(--t1); border-radius:14px; padding:12px 16px; margin-bottom:12px; font-size:14px; line-height:1.55; }
-  .quiet-list { display:grid; grid-template-columns:repeat(auto-fill, minmax(420px, 1fr)); gap:8px 18px; margin-top:12px; }
+  .quiet-list { display:grid; grid-template-columns:repeat(auto-fill, minmax(min(420px, 100%), 1fr)); gap:8px 18px; margin-top:12px; }
   .quiet-row { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-top:1px solid var(--line); min-width:0; }
   .quiet-idea { font-size:13.5px; color:color-mix(in srgb, var(--ink) 80%, var(--muted)); margin-top:2px; line-height:1.5; }
   .opps { margin-top:12px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:10px 16px; }
@@ -186,6 +196,13 @@
   .digest { display:flex; gap:10px; flex-wrap:wrap; margin-top:4px; }
   .digest .d { flex:1 1 180px; padding:10px 12px; border-radius:12px; background:var(--bg); min-width:0; }
   .digest .d b { display:block; font-size:22px; letter-spacing:-.01em; }
+  .need-list { display:flex; flex-direction:column; margin-top:10px; }
+  .need-row { display:flex; gap:10px; align-items:center; padding:10px 0; border-top:1px solid var(--line); min-width:0; }
+  .need-row:first-child { border-top:0; }
+  .all-done { margin:14px 0 0; font-size:16px; font-weight:600; }
+  .digest .d[data-tab] { cursor:pointer; } .digest .d[data-tab]:hover { background:color-mix(in srgb, var(--accent) 8%, var(--bg)); }
+  @media (max-width:760px) { .need-row { flex-wrap:wrap; } .need-row > div:nth-child(2) { flex:1 1 calc(100% - 50px) !important; } .need-row .btn { flex:1; justify-content:center; }
+    .digest { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; } .digest .d { padding:8px 10px; } .digest .d b { font-size:18px; } }
   .digest .d .who { font-size:12.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .stat { font-size:34px; font-weight:700; letter-spacing:-.02em; line-height:1.1; }
   .stat-tile { cursor:pointer; transition:transform .15s; } .stat-tile:hover { transform:translateY(-1px); }
@@ -201,7 +218,7 @@
   /* Brief text (used inside tiles and the brief editor) */
   .brief p { margin:0 0 10px; } .brief p:last-child { margin-bottom:0; }
   .brief .section { padding:12px 0; border-top:1px solid var(--line); } .brief .section:first-child { border-top:0; padding-top:0; }
-  .brief .label { font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:4px; }
+  .brief .label { font-size:14px; font-weight:650; color:var(--ink); margin-bottom:4px; }
 
   dialog { border:0; border-radius:22px; background:var(--bg); color:var(--ink); width:min(1000px, calc(100vw - 32px)); max-height:90vh; padding:24px; box-shadow:0 24px 80px rgba(0,0,0,.25); }
   dialog.narrow { width:min(620px, calc(100vw - 32px)); }
@@ -218,6 +235,16 @@
     .pwrap { height:auto; } .pgrid { grid-template-columns:1fr; }
     .pleft, .pright { overflow:visible; } .pright { border-left:0; border-top:1px solid var(--line); }
   }
+  .status { position:fixed; left:50%; bottom:24px; transform:translate(-50%, 12px); z-index:50; max-width:min(560px, calc(100vw - 32px));
+    background:var(--ink); color:var(--bg); padding:11px 16px; border-radius:12px; font-size:14px; line-height:1.45; box-shadow:0 10px 30px rgba(20,18,14,.25);
+    display:flex; gap:12px; align-items:center; opacity:0; pointer-events:none; transition:opacity .25s cubic-bezier(.16,1,.3,1), transform .25s cubic-bezier(.16,1,.3,1); }
+  .status.on { opacity:1; transform:translate(-50%, 0); pointer-events:auto; }
+  .status.error { background:var(--danger); color:#fff; }
+  .status button { font:inherit; font-size:13px; font-weight:600; background:none; border:0; color:inherit; text-decoration:underline; text-underline-offset:3px; cursor:pointer; padding:0; }
+  .synced { font-size:12px; color:var(--muted); white-space:nowrap; }
+  .sent-mark { font-size:12px; color:var(--muted); margin-top:2px; } .sent-mark.no { color:var(--warn); font-weight:600; }
+  [role=button] { cursor:pointer; }
+  @media (prefers-reduced-motion: reduce) { .status { transition:none; } }
   dialog::backdrop { background:rgba(20,18,14,.45); backdrop-filter:blur(2px); }
 </style>
 </head>
@@ -231,11 +258,12 @@
     <button data-tab="boardy">Boardy</button>
   </nav>
   <span class="spacer"></span>
-  <span class="muted" id="liveLabel"></span>
+  <span class="synced" id="synced"></span><span class="muted" id="liveLabel"></span>
   <button class="btn" id="settings">Accounts &amp; Boardy</button>
   <button class="btn primary" id="sync">Sync</button>
 </header>
 <main id="view"></main>
+<div class="status" id="status" role="status" aria-live="polite"></div>
 <dialog id="dlg"></dialog>
 
 <script>
@@ -261,12 +289,48 @@ const fmt = d => {
 const fmtDay = d => (d ? new Date(d.length === 10 ? d + "T12:00:00" : d).toLocaleDateString([], { dateStyle: "medium" }) : "");
 let S = null, tab = 'meetings';
 
+// Drawn icons, one stroke weight. They're aria-hidden, so every control also carries a text label or aria-label.
+const ICONS = {
+  pen:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+  refresh:'<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>',
+  left:'<path d="M15 5l-7 7 7 7"/>', right:'<path d="M9 5l7 7-7 7"/>',
+  arrow:'<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>', close:'<path d="M6 6l12 12M18 6L6 18"/>',
+  more:'<circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/>',
+  live:'<circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/>',
+};
+const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
+
+// One status line instead of pop-up alerts. Errors stay until dismissed; confirmations fade.
+let statusTimer;
+function notify(msg, kind = 'ok', action) {
+  const el = $('#status');
+  clearTimeout(statusTimer);
+  el.className = 'status on' + (kind === 'error' ? ' error' : '');
+  el.innerHTML = `<span>${esc(msg)}</span>${action ? `<button type="button" id="statusAct">${esc(action.label)}</button>` : ''}<button type="button" id="statusX" aria-label="Dismiss">${ic('close')}</button>`;
+  if (action) $('#statusAct').onclick = () => { el.className = 'status'; action.run(); };
+  $('#statusX').onclick = () => { el.className = 'status'; };
+  if (kind !== 'error') statusTimer = setTimeout(() => { el.className = 'status'; }, 4500);
+}
+const isLocal = ['127.0.0.1', 'localhost'].includes(location.hostname);
+
+// Clickable cards, rows and chips act like buttons for the keyboard too.
+const CLICKABLE = '[data-person]:not(button):not(a), .mail-row, .stat-tile, .d[data-tab]';
+function wireKeys() {
+  document.querySelectorAll(CLICKABLE).forEach(el => { if (!el.hasAttribute('tabindex')) { el.tabIndex = 0; el.setAttribute('role', 'button'); } });
+}
+new MutationObserver(wireKeys).observe(document.body, { childList: true, subtree: true });
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches?.('[role=button]')) { e.preventDefault(); e.target.click(); }
+});
+
 async function api(path, body) {
   const r = await fetch(path, { method: body ? 'POST' : 'GET', headers: { 'x-nq':'1', 'Content-Type':'application/json' }, body: body && JSON.stringify(body) });
   // A 404 with no body almost always means the server is an older version than this page.
   // Hosted app: the session ran out, so go sign in again.
   if (r.status === 401) { location.href = '/login'; throw new Error('Signed out'); }
-  if (r.status === 404) throw new Error('The server is older than this page. Restart it (Ctrl+C, then: node --no-warnings src/cli.js ui) and refresh.');
+  if (r.status === 404) throw new Error(isLocal
+    ? 'The server is older than this page. Restart it (Ctrl+C, then npm run nq -- ui) and refresh.'
+    : "This server doesn't have that feature yet. Refresh the page; if it keeps happening, redeploy.");
   const raw = await r.text();
   let j = null;
   try { j = raw ? JSON.parse(raw) : null; } catch { throw new Error(`Unexpected reply from the server (${r.status})`); }
@@ -285,7 +349,7 @@ function badges(email) {
 }
 
 function render() {
-  $('#liveLabel').innerHTML = S.live ? '<span class="tag new">● Live</span>' : '';
+  $('#liveLabel').innerHTML = S.live ? `<span class="tag new">${ic('live')} Live</span>` : '';
   $('#liveLabel').title = S.live ? 'Boardy emails arrive here as soon as Gmail gets them' : '';
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
   $('#view').innerHTML = { meetings, network, steps, boardy }[tab]();
@@ -313,9 +377,9 @@ const mailTime = d => {
 function boardy() {
   return `<div class="mail">
     <aside class="mail-side">
-      <button class="btn primary compose-btn" id="mCompose">✎ Compose</button>
+      <button class="btn primary compose-btn" id="mCompose">${ic('pen')} Compose</button>
       <input id="mFilter" placeholder="Search Boardy mail" value="${esc(mail.filter)}">
-      <div class="row muted" style="margin:6px 2px"><span>Inbox</span><span class="spacer"></span><button class="btn ghost" id="mRefresh" title="Refresh">↻</button></div>
+      <div class="row muted" style="margin:6px 2px"><span>Inbox</span><span class="spacer"></span><button class="btn ghost" id="mRefresh" title="Refresh" aria-label="Refresh Boardy mail">${ic('refresh')}</button></div>
       <div id="mList" class="mail-list"><div class="empty" style="padding:12px">Loading…</div></div>
     </aside>
     <section id="mPane" class="mail-pane"></section>
@@ -358,7 +422,7 @@ function renderPane() {
   el.innerHTML = `<div class="mail-read">
     <h3 style="margin:0 0 14px;font-size:20px;letter-spacing:-.01em">${esc(t.subject)}</h3>
     ${t.messages.map(m => `<div class="mail-msg">
-      <div class="row" style="flex-wrap:nowrap"><div class="avatar sm" style="${m.mine ? '' : 'background:var(--t1);color:#3c8a4a'}">${m.mine ? 'Me' : 'B'}</div>
+      <div class="row" style="flex-wrap:nowrap"><div class="avatar sm" style="${m.mine ? '' : 'background:var(--done);color:var(--done-ink)'}">${m.mine ? 'Me' : 'B'}</div>
         <div style="flex:1;min-width:0"><strong style="font-weight:600">${m.mine ? 'Me' : 'Boardy'}</strong>
           <span class="muted" style="margin-left:6px">${esc(m.from.replace(/^.*</, '<'))}</span></div>
         <span class="muted">${fmt(m.date)}</span></div>
@@ -412,9 +476,9 @@ function meetingCard(m) {
       <input data-goal="${esc(m.eventId)}" data-email="${esc(m.email)}" value="${esc(m.goal)}" placeholder="e.g. ask about winter co-op on their team">`}
     <div class="row" style="margin-top:12px">
       ${m.past ? `<button class="btn ${m.hasNote ? '' : 'primary'}" data-addnote="${esc(m.email)}" data-event="${esc(m.eventId)}">Add note</button>
-        <button class="btn" data-brief="${esc(m.eventId)}" data-email="${esc(m.email)}">${m.hasBrief ? 'Brief' : 'Paste brief'}</button>
+        <button class="btn" data-brief="${esc(m.eventId)}" data-email="${esc(m.email)}">${m.hasBrief ? 'View brief' : 'Paste brief'}</button>
         ${m.hasBrief ? '' : `<button class="btn" data-ask="${esc(m.eventId)}" data-email="${esc(m.email)}">Ask Boardy</button>`}` : ''}
-      <span class="spacer"></span><button class="btn ghost" data-person="${esc(m.email)}">Open →</button>
+      <span class="spacer"></span><button class="btn ghost" data-person="${esc(m.email)}">Open ${ic('arrow')}</button>
     </div>
   </div>`;
 }
@@ -433,6 +497,11 @@ function calendarTile() {
   const byDay = {};
   for (const m of S.meetings) (byDay[key(day(m))] ||= []).push(m);
   const cls = m => (!m.past ? '' : m.hasNote ? 'done' : 'needs');
+  const firstOf = m => (m.name || m.email).split(/[\s@]/)[0];
+  const firstCount = {};
+  for (const m of S.meetings) firstCount[firstOf(m)] = (firstCount[firstOf(m)] || 0) + 1;
+  const shortName = m => { const f = firstOf(m), last = (m.name || '').trim().split(/\s+/)[1]; return firstCount[f] > 1 && last ? `${f} ${last[0]}.` : f; };
+  const statusWord = m => (!m.past ? 'upcoming' : m.hasNote ? 'done' : 'needs notes');
   const cells = [];
   for (let i = 0; i < 42; i++) {
     const d = new Date(start); d.setDate(start.getDate() + i);
@@ -441,21 +510,21 @@ function calendarTile() {
     cells.push(`<div class="cal-day ${d.getMonth() !== month ? 'out' : ''} ${key(d) === key(now) ? 'today' : ''}">
       <span class="n">${d.getDate()}</span>
       ${list.map(m => `<div class="chip ${cls(m)}" data-person="${esc(m.email)}" title="${esc(`${m.name || m.email} · ${m.title} · ${fmt(m.start)}`)}">
-        <span class="dot"></span>${esc((m.name || m.email).split(/[\s@]/)[0])}</div>`).join('')}
+        <span class="dot"></span>${esc(shortName(m))}<span class="sr">, ${statusWord(m)}</span></div>`).join('')}
     </div>`);
   }
   const inMonth = S.meetings.filter(m => day(m).getMonth() === month && day(m).getFullYear() === first.getFullYear()).length;
-  return `<div class="tile span2 tall3">
+  return `<div class="tile span2">
     <div class="cal-head">
       <div class="cal-title">${first.toLocaleString([], { month: 'long', year: 'numeric' })}
         <span class="muted" style="font-weight:400;font-size:13px">· ${inMonth} meeting${inMonth === 1 ? '' : 's'}</span></div>
-      <button class="btn ghost" data-cal="-1" title="Previous month">‹</button>
+      <button class="btn ghost" data-cal="-1" title="Previous month" aria-label="Previous month">${ic('left')}</button>
       <button class="btn" data-cal="0">Today</button>
-      <button class="btn ghost" data-cal="1" title="Next month">›</button>
+      <button class="btn ghost" data-cal="1" title="Next month" aria-label="Next month">${ic('right')}</button>
     </div>
     <div class="cal-grid">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => `<div class="cal-dow">${d}</div>`).join('')}${cells.join('')}</div>
     <div class="legend"><span><i style="background:var(--accent)"></i>Upcoming</span><span><i style="background:var(--warn)"></i>Needs notes</span>
-      <span><i style="background:#5a9a66"></i>Done</span></div>
+      <span><i style="background:var(--done-ink)"></i>Done</span></div>
   </div>`;
 }
 
@@ -470,7 +539,7 @@ function digestTile() {
   const fresh = Object.keys(S.unread);
   const names = list => list.map(m => esc((m.name || m.email).split(/[\s@]/)[0])).join(', ');
   const nameOf = email => esc((S.people.find(p => p.email === email)?.name || email).split(/[\s@]/)[0]);
-  const box = (n, label, who, t = '') => `<div class="d ${t}"><b>${n}</b>${label}${who ? `<div class="who">${who}</div>` : ''}</div>`;
+  const box = (n, label, who, go = '') => `<div class="d" ${go}><b>${n}</b>${label}${who ? `<div class="who">${who}</div>` : ''}</div>`;
   const start = new Date(now - wk + 86400000).toLocaleDateString([], { month: 'short', day: 'numeric' });
   const end = new Date(now + wk).toLocaleDateString([], { month: 'short', day: 'numeric' });
   return `<div class="tile span4">
@@ -480,8 +549,8 @@ function digestTile() {
       ${box(ahead.length, ` meeting${ahead.length === 1 ? '' : 's'} coming up`, names(ahead))}
       ${box(metNow.length, ` met in the last 7 days`, names(metNow))}
       ${box(unnoted.length, ` still need${unnoted.length === 1 ? 's' : ''} notes`, names(unnoted))}
-      ${box(steps.length, ` open next step${steps.length === 1 ? '' : 's'}`, steps.slice(0, 2).map(s => esc(s.next_step)).join(' · '))}
-      ${box(fresh.length, ` new from Boardy`, fresh.map(nameOf).join(', '))}
+      ${box(steps.length, ` open next step${steps.length === 1 ? '' : 's'}`, steps.slice(0, 2).map(s => esc(s.next_step)).join(' · '), 'data-tab="steps"')}
+      ${box(fresh.length, ` new from Boardy`, fresh.map(nameOf).join(', '), 'data-tab="boardy"')}
     </div>
   </div>`;
 }
@@ -491,8 +560,6 @@ function meetings() {
   if (!S.meetings.length) return '<div class="tile">No meetings yet. Press <strong>Sync</strong> to pull your calendar and Boardy emails.</div>';
   const up = S.meetings.filter(m => !m.past);
   const needs = S.meetings.filter(m => m.past && !m.hasNote).reverse();
-  const openSteps = S.nextSteps.filter(s => !s.done).length;
-  const fresh = Object.keys(S.unread).length;
   const next = up[0];
 
   const hero = next ? `<div class="tile span2 t2">
@@ -507,28 +574,29 @@ function meetings() {
     </div>`
     : `<div class="tile span2 t2"><div class="kicker">Next up</div><div class="hero-name">Nothing booked</div>
       <div class="muted">Your next Boardy intro will show here.</div></div>`;
-  const stat = (n, label, t, go) => `<div class="tile stat-tile ${t}" ${go}><div class="stat">${n}</div><div class="muted">${label}</div></div>`;
-  // Only "Needs notes" is listed (upcoming and done are on the calendar). It folds away; the choice is remembered.
-  let folded = false;
-  try { folded = localStorage.getItem('needsFolded') === '1'; } catch {}
-  const needsSection = `<details id="needs" ${folded ? '' : 'open'} style="margin-top:28px"
-      ontoggle="this.querySelector('.fold').textContent = this.open ? 'hide' : 'show'; try { localStorage.setItem('needsFolded', this.open ? '0' : '1') } catch {}">
-    <summary class="row" style="margin-bottom:12px"><h2 style="margin:0">Needs notes · ${needs.length}</h2>
-      <span class="muted fold">${folded ? 'show' : 'hide'}</span></summary>
-    ${needs.length ? `<div class="list">${needs.map(meetingCard).join('')}</div>` : '<div class="empty">All caught up.</div>'}
-  </details>`;
+  // Needs notes sits beside Next up: the two jobs this screen exists for. Newest first; the rest fold away.
+  const needRow = m => `<div class="need-row">
+      <div class="avatar sm">${esc(initials(m.name || m.email))}</div>
+      <div style="min-width:0;flex:1"><span class="link" data-person="${esc(m.email)}" style="font-weight:600;color:var(--ink)">${esc(m.name || m.email)}</span>
+        <div class="muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${fmtDay(m.start)} · ${esc(m.title)}</div></div>
+      <button class="btn" data-brief="${esc(m.eventId)}" data-email="${esc(m.email)}">${m.hasBrief ? 'View brief' : 'Paste brief'}</button>
+      <button class="btn primary" data-addnote="${esc(m.email)}" data-event="${esc(m.eventId)}">Add note</button>
+    </div>`;
+  const needsTile = `<div class="tile span2" id="needs">
+      <div class="row"><h2 style="margin:0">Needs notes</h2><span class="tag ${needs.length ? 'warn' : ''}">${needs.length}</span></div>
+      ${needs.length
+        ? `<div class="need-list">${needs.slice(0, 5).map(needRow).join('')}</div>
+           ${needs.length > 5 ? `<details class="more"><summary>Show ${needs.length - 5} more</summary><div class="need-list">${needs.slice(5).map(needRow).join('')}</div></details>` : ''}`
+        : `<p class="all-done">All caught up. Every call so far has its notes.</p>`}
+    </div>`;
 
   return `<div class="bento">
       ${digestTile()}
-      ${calendarTile()}
       ${hero}
-      ${stat(needs.length, 'meetings need notes', needs.length ? 't3' : '', 'onclick="const n=document.getElementById(\'needs\'); n.open=true; n.scrollIntoView({behavior:\'smooth\'})"')}
-      ${stat(fresh, 'new from Boardy', fresh ? 't4' : '', 'data-tab="network"')}
-      ${stat(S.people.length, 'people in your network', 't1', 'data-tab="network"')}
-      ${stat(openSteps, 'open next steps', '', 'data-tab="steps"')}
+      ${needsTile}
+      ${calendarTile()}
       ${quietTile()}
-    </div>
-    ${needsSection}`;
+    </div>`;
 }
 
 // Prep on the Next up tile: Boardy's talking points once they arrive; until then, its status.
@@ -538,7 +606,7 @@ function prepPeek(m) {
     const items = talk ? listItems(talk.text).slice(0, 3) : [];
     return `<div class="prep-peek">
       <div class="row"><span class="sec-label" style="margin:0">Prep from Boardy</span><span class="spacer"></span>
-        <button class="btn ghost" data-person="${esc(m.email)}">Open prep →</button></div>
+        <button class="btn ghost" data-person="${esc(m.email)}">Open prep ${ic('arrow')}</button></div>
       ${items.length ? `<ul class="pts">${items.map(i => `<li>${linkify(i)}</li>`).join('')}</ul>` : ''}</div>`;
   }
   if (m.prepRequested) return `<div class="prep-peek muted">Boardy is preparing notes for this call. They'll appear here.</div>`;
@@ -561,12 +629,12 @@ function quietTile() {
       </div>
       ${p.email.endsWith('@no-email.boardy') ? '' : `<a class="btn ghost" href="${esc(composeUrl(p.email))}" target="_blank" rel="noopener noreferrer">Email</a>`}
     </div>`;
-  return `<div class="tile span4">
+  return `<div class="tile span2">
     <div class="row"><div class="kicker" style="margin:0">Going quiet · ${q.length}</div><span class="spacer"></span>
       ${pend.followup ? '<span class="muted">Waiting for Boardy\'s ideas…</span>'
         : needIdeas ? `<button class="btn" data-followups="followup">Ask Boardy for follow-up ideas (${needIdeas})</button>` : ''}
       ${pend.reconnect ? '<span class="muted">Waiting for Boardy\'s picks…</span>'
-        : '<button class="btn primary" data-followups="reconnect">Who should I reconnect with this month?</button>'}
+        : '<button class="btn" data-followups="reconnect">Who should I reconnect with this month?</button>'}
     </div>
     ${q.length ? `<div class="quiet-list">${q.map(row).join('')}</div>`
       : '<div class="muted" style="margin-top:8px">Nobody is going quiet. You\'ve been in touch with everyone in the last 2 weeks.</div>'}
@@ -750,10 +818,10 @@ async function showPerson(email) {
       <span class="spacer"></span><span class="muted" style="font-size:12px">roles, projects, events</span></summary>
     <div class="opp-list">
       ${opps.map(o => `<div class="opp">
-        <input type="checkbox" data-done="${o.id}" data-email="${E}" ${o.done ? 'checked' : ''} title="Done">
+        <input type="checkbox" data-done="${o.id}" data-email="${E}" ${o.done ? 'checked' : ''} title="Done" aria-label="Mark done">
         <span style="flex:1;${o.done ? 'text-decoration:line-through;opacity:.55' : ''}">${linkify(o.body)}</span>
         <span class="muted" style="font-size:12px">${o.title === 'you' ? 'you' : 'Boardy'}</span>
-        <button class="btn ghost" data-oppdel="${o.id}" data-email="${E}" title="Remove" aria-label="Remove">✕</button></div>`).join('')}
+        <button class="btn ghost" data-oppdel="${o.id}" data-email="${E}" title="Remove" aria-label="Remove opportunity">${ic('close')}</button></div>`).join('')}
       <div class="row" style="flex-wrap:nowrap;gap:6px;margin-top:6px">
         <input id="oppText" placeholder="Add an opportunity (a role, a project, an event…)" style="font-size:13px;padding:7px 10px">
         <button class="btn" id="oppAdd" data-email="${E}">Add</button></div>
@@ -774,12 +842,14 @@ async function showPerson(email) {
 
   // ---- Right column ----
   const steps = notes.filter(n => n.next_step);
-  const noteItem = n => `<div class="note">
+  const sentFor = n => p.entries.filter(e => e.kind === 'sent' && String(e.ref_id || '').startsWith(`sent-note-${n.id}-`)).map(e => e.occurred_at).sort().at(-1);
+  const noteItem = n => { const sentAt = sentFor(n); return `<div class="note">
     <div class="row" style="flex-wrap:nowrap"><span class="muted" style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${fmt(n.occurred_at)}${n.event_ref && meetingTitle(n.event_ref) ? ` · ${esc(meetingTitle(n.event_ref))}` : ''}</span><span class="spacer"></span>
       <span class="note-actions" style="display:flex;gap:2px;flex:none"><button class="btn ghost" data-editnote="${n.id}" data-email="${E}">Edit</button>
-      <button class="btn ghost" data-send="${n.id}" data-email="${E}">Send to Boardy</button></span></div>
+      <button class="btn ${sentAt ? 'ghost' : ''}" data-send="${n.id}" data-email="${E}">${sentAt ? 'Send again' : 'Send to Boardy'}</button></span></div>
+    <div class="${sentAt ? 'sent-mark' : 'sent-mark no'}">${sentAt ? `Sent to Boardy · ${fmtDay(sentAt)}` : 'Not sent to Boardy yet'}</div>
     <div class="note-body">${linkify(n.body.trim())}</div>
-    ${n.next_step ? `<div class="muted" style="margin-top:6px">→ ${esc(n.next_step)}${n.done ? ' (done)' : ''}</div>` : ''}</div>`;
+    ${n.next_step ? `<div class="muted" style="margin-top:6px">Next step: ${esc(n.next_step)}${n.done ? ' (done)' : ''}</div>` : ''}</div>`; };
   const defaultRef = (upcoming.length && !past.length ? upcoming[0] : past[0])?.ref_id || '';
 
   openDlg(`<div class="pwrap">
@@ -795,14 +865,14 @@ async function showPerson(email) {
         <div class="row" style="gap:6px;flex-wrap:nowrap">
           ${p.linkedin ? `<a class="btn" href="${esc(p.linkedin)}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">LinkedIn ↗</a>` : ''}
           ${noEmail ? '' : `<a class="btn primary" href="${esc(composeUrl(email))}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Email ${esc(first)}</a>`}
-          <details class="menu"><summary class="btn ghost" title="More actions">⋯</summary>
+          <details class="menu"><summary class="btn ghost" title="More actions" aria-label="More actions">${ic('more')}</summary>
             <div class="menu-pop">
               ${askRef ? `<button data-ask="${esc(askRef)}" data-email="${E}">Ask Boardy about ${esc(first)}</button>` : ''}
               <button data-linkedin="${E}">${p.linkedin ? 'Change LinkedIn link' : 'Add LinkedIn link'}</button>
               <button data-export="md" data-email="${E}">Export as Markdown</button>
               <hr><button class="danger" data-forget="${E}">Delete record…</button>
             </div></details>
-          <button class="btn ghost" data-close title="Close (Esc)" aria-label="Close">✕</button>
+          <button class="btn ghost" data-close title="Close (Esc)" aria-label="Close">${ic('close')}</button>
         </div>
       </div>
     </div>
@@ -832,7 +902,7 @@ async function showPerson(email) {
           <textarea id="qNote" placeholder="What did you learn? What do you want to remember about ${esc(first)}?"></textarea>
           <input id="qNext" placeholder="Next step (optional)">
           <div class="row" style="gap:6px;flex-wrap:nowrap">
-            ${meetings.length ? `<select id="qEvent" style="flex:1;min-width:0">
+            ${meetings.length ? `<select id="qEvent" aria-label="Which meeting this note is about" style="flex:1;min-width:0">
               <option value="">Not about a meeting</option>
               ${meetings.map(m => `<option value="${esc(m.ref_id)}" ${m.ref_id === defaultRef ? 'selected' : ''}>${esc(m.title)}${m.occurred_at ? ' · ' + fmtDay(m.occurred_at) : ''}</option>`).join('')}
             </select>` : '<span class="spacer"></span>'}
@@ -892,7 +962,7 @@ async function showNote(email, { id = null, eventRef = '' } = {}) {
   openDlg(`<h3 style="margin:0">${id ? 'Edit note' : 'New note'}: ${esc(p.name || email)}</h3>
     <label>Note (type, or paste your notes or a transcript)</label><textarea id="nBody" style="min-height:160px">${esc(n.body)}</textarea>
     <label>Meeting (optional)</label>
-    <select id="nEvent" style="width:100%;font:inherit;padding:8px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink)">
+    <select id="nEvent" aria-label="Which meeting this note is about" style="width:100%;font:inherit;padding:8px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink)">
       <option value="">Not about a specific meeting</option>
       ${meetings.map(m => `<option value="${esc(m.ref_id)}" ${m.ref_id === n.event_ref ? 'selected' : ''}>${esc(m.title)} · ${fmt(m.occurred_at)}</option>`).join('')}
     </select>
@@ -903,7 +973,7 @@ async function showNote(email, { id = null, eventRef = '' } = {}) {
     try {
       await api('/api/note', { id, email, body: $('#nBody').value, eventRef: $('#nEvent').value, next_step: $('#nNext').value });
       await load(); showPerson(email);
-    } catch (err) { alert(err.message); }
+    } catch (err) { notify(err.message, 'error'); }
   };
   if (id) $('#delNote').onclick = async () => {
     if (!confirm('Delete this note?')) return;
@@ -914,10 +984,10 @@ async function showNote(email, { id = null, eventRef = '' } = {}) {
 // kind 'sent' sends one of my notes (ref = note id); kind 'ask' asks for a brief (ref = meeting id).
 // Both show an editable preview first.
 async function showSend(email, ref, kind = 'sent') {
-  if (!S.boardy) return alert('Set the Boardy address first.');
+  if (!S.boardy) return notify('Set the Boardy address first.');
   const draft = await api(kind === 'ask' ? '/api/ask-email' + qs({ email, eventId: ref }) : '/api/note-email' + qs({ id: ref }));
   const eventId = kind === 'ask' ? ref : '';
-  if (!S.sendFrom) return alert('Choose which account sends to Boardy under "Accounts & Boardy".');
+  if (!S.sendFrom) return notify('Choose which account sends to Boardy under "Accounts & Boardy".');
   openDlg(`<h3 style="margin:0">Send to Boardy</h3><div class="muted">From: ${esc(S.sendFrom)} · To: ${esc(S.boardy)} · Review and edit before sending.</div>
     <label>Subject</label><input id="sSubj" value="${esc(draft.subject)}">
     <label>Message</label><textarea id="sText" style="min-height:260px">${esc(draft.text)}</textarea>
@@ -926,14 +996,28 @@ async function showSend(email, ref, kind = 'sent') {
   $('#doSend').onclick = async e => {
     e.target.disabled = true; e.target.textContent = 'Sending…';
     try {
-      await api('/api/send', { email, eventId, kind, subject: $('#sSubj').value, text: $('#sText').value });
+      await api('/api/send', { email, eventId, kind, noteId: kind === 'sent' ? ref : undefined, subject: $('#sSubj').value, text: $('#sText').value });
       $('#dlg').close();
-      alert(kind === 'ask'
+      notify(kind === 'ask'
         ? (S.live ? "Sent. You'll get a notification here when Boardy replies." : "Sent. Boardy's reply will attach to this person on your next Sync.")
         : 'Sent to Boardy.');
       await load();
     }
-    catch (err) { alert(err.message); e.target.disabled = false; e.target.textContent = 'Send'; }
+    catch (err) { notify(err.message, 'error'); e.target.disabled = false; e.target.textContent = 'Send'; }
+  };
+}
+
+// Every email to Boardy shows From and To before it leaves, the same as a note.
+function previewSend({ to, subject, text, run }) {
+  openDlg(`<h3 style="margin:0">Send to Boardy</h3><div class="muted">From: ${esc(S.sendFrom || 'not set')} · To: ${esc(to || 'not set')}</div>
+    <label>Subject</label><div style="font-weight:600">${esc(subject || '(no subject)')}</div>
+    <label>Message</label><div class="note-body" style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;max-height:50vh;overflow:auto">${esc(text)}</div>
+    <div class="row" style="margin-top:14px"><span class="spacer"></span><button class="btn" data-close>Keep editing</button>
+    <button class="btn primary" id="doPreviewSend">Send</button></div>`);
+  $('#doPreviewSend').onclick = async e => {
+    e.target.disabled = true; e.target.textContent = 'Sending…';
+    try { await run(); $('#dlg').close(); }
+    catch (err) { notify(err.message, 'error'); e.target.disabled = false; e.target.textContent = 'Send'; }
   };
 }
 
@@ -956,7 +1040,7 @@ document.addEventListener('click', async e => {
     const url = prompt('LinkedIn profile link (leave empty to remove):', $('#dlg a[href*="linkedin.com"]')?.href || '');
     if (url === null) return;
     try { await api('/api/linkedin', { email: t.dataset.linkedin, url }); showPerson(t.dataset.linkedin); }
-    catch (err) { alert(err.message); }
+    catch (err) { notify(err.message, 'error'); }
   }
   else if (t.dataset.person) showPerson(t.dataset.person);
   else if (t.dataset.addnote) showNote(t.dataset.addnote, { eventRef: t.dataset.event });
@@ -972,7 +1056,7 @@ document.addEventListener('click', async e => {
 });
 document.addEventListener('change', async e => {
   const t = e.target;
-  if (t.dataset.goal) await api('/api/goal', { email: t.dataset.email, eventId: t.dataset.goal, goal: t.value });
+  if (t.dataset.goal) { await api('/api/goal', { email: t.dataset.email, eventId: t.dataset.goal, goal: t.value }); notify('Goal saved.'); }
   if (t.dataset.done) {
     await api('/api/done', { id: Number(t.dataset.done), done: t.checked });
     await load();
@@ -987,13 +1071,13 @@ document.addEventListener('click', async e => {
   if (t.dataset.prep) {
     t.disabled = true; t.textContent = 'Asking Boardy…';
     try { await api('/api/prep', { email: t.dataset.email, eventId: t.dataset.prep }); await load(); if ($('#dlg').open) showPerson(t.dataset.email); }
-    catch (err) { alert(err.message); t.disabled = false; t.textContent = 'Prep me now'; }
+    catch (err) { notify(err.message, 'error'); t.disabled = false; t.textContent = 'Prep me now'; }
     return;
   }
   if (t.dataset.followups) {
     t.disabled = true; t.textContent = 'Asking Boardy…';
     try { await api('/api/followups', { type: t.dataset.followups }); await load(); }
-    catch (err) { alert(err.message); await load(); }
+    catch (err) { notify(err.message, 'error'); await load(); }
     return;
   }
   if (t.id === 'oppAdd') {
@@ -1012,7 +1096,7 @@ document.addEventListener('click', async e => {
     try {
       await api('/api/note', { email: t.dataset.email, body, next_step: $('#qNext').value, eventRef: $('#qEvent')?.value || '' });
       await load(); showPerson(t.dataset.email);
-    } catch (err) { alert(err.message); t.disabled = false; }
+    } catch (err) { notify(err.message, 'error'); t.disabled = false; }
     return;
   }
   if (t.dataset.export) {
@@ -1021,7 +1105,7 @@ document.addEventListener('click', async e => {
       const f = await api('/api/export' + qs({ format: t.dataset.export, ...(t.dataset.email ? { email: t.dataset.email } : {}) }));
       const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([f.content], { type: f.type })), download: f.filename });
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    } catch (err) { alert(err.message); }
+    } catch (err) { notify(err.message, 'error'); }
     return;
   }
   if (t.id === 'mCompose') { mail.composing = true; mail.open = null; renderList(); renderPane(); $('#bMsg').focus(); }
@@ -1036,22 +1120,25 @@ document.addEventListener('click', async e => {
   }
   else if (t.id === 'bSend') {
     const text = $('#bMsg').value.trim();
-    if (!text) return alert('Type a message first.');
-    if (!S.sendFrom || !S.boardy) return alert('Set the Boardy address and sending account under "Accounts & Boardy".');
-    // Clicking Send is the confirmation: the message is written and visible right here.
-    t.disabled = true; t.textContent = 'Sending…';
-    try {
-      const r = await api('/api/boardy-message', { text, subject: $('#bSubj').value });
+    if (!text) return notify('Type a message first.');
+    if (!S.sendFrom || !S.boardy) return notify('Set the Boardy address and sending account under "Accounts & Boardy".');
+    const subject = $('#bSubj').value;
+    previewSend({ to: S.boardy, subject, text, run: async () => {
+      const r = await api('/api/boardy-message', { text, subject });
       draftText = ''; mail.composing = false; mail.open = { inbox: r.inbox, id: r.id };
+      notify('Sent to Boardy.');
       await loadChat();
-    } catch (err) { alert(err.message); t.disabled = false; t.textContent = 'Send'; }
+    } });
   }
   else if (t.id === 'mSendReply') {
     const text = $('#mReply').value.trim();
-    if (!text) return alert('Type a reply first.');
-    t.disabled = true; t.textContent = 'Sending…';
-    try { await api('/api/reply', { inbox: mail.open.inbox, id: mail.open.id, text }); mail.reply = ''; await openMail(mail.open.inbox, mail.open.id, true); loadChat(); }
-    catch (err) { alert(err.message); t.disabled = false; t.textContent = 'Send reply'; }
+    if (!text) return notify('Type a reply first.');
+    const open = mail.open;
+    previewSend({ to: S.boardy, subject: 'Reply in this thread', text, run: async () => {
+      await api('/api/reply', { inbox: open.inbox, id: open.id, text }); mail.reply = '';
+      notify('Reply sent to Boardy.');
+      await openMail(open.inbox, open.id, true); loadChat();
+    } });
   }
 });
 
@@ -1072,19 +1159,23 @@ document.addEventListener('input', e => {
     $('#plist').innerHTML = peopleList(S.people.filter(p => [p.name, p.email, p.company, p.title].join(' ').toLowerCase().includes(q)));
   }
 });
+let lastSync = null;
+const showSynced = () => { $('#synced').textContent = lastSync ? 'Synced ' + lastSync.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' }) : ''; };
 $('#sync').onclick = async e => {
   e.target.disabled = true; e.target.textContent = 'Syncing…';
   try {
     const r = await api('/api/sync', {});
-    if (!r.sendFrom) alert(`No email from boardy.ai found in ${r.accounts.join(', ')}. Connect the account Boardy uses, or set the address under "Accounts & Boardy".`);
+    if (!r.sendFrom) notify(`No email from boardy.ai found in ${r.accounts.join(', ')}. Connect the account Boardy uses, or set the address under "Accounts & Boardy".`);
+    else notify('Synced. Meetings and Boardy emails are up to date.');
     await load();
-  } catch (err) { alert(err.message); }
+    lastSync = new Date(); showSynced();
+  } catch (err) { notify(err.message, 'error', { label: 'Try again', run: () => $('#sync').click() }); }
   e.target.disabled = false; e.target.textContent = 'Sync';
 };
 $('#settings').onclick = () => {
   openDlg(`<div class="row"><h3 style="margin:0">Accounts &amp; Boardy</h3><span class="spacer"></span><button class="btn" data-close>Close</button></div>
     <label>Connected Google accounts (Sync reads all of them)</label>
-    ${S.accounts.map(a => `<div class="row"><input type="radio" name="sendFrom" value="${esc(a)}" style="width:auto" ${a === S.sendFrom ? 'checked' : ''}> ${esc(a)}</div>`).join('') || '<div class="empty">None.</div>'}
+    ${S.accounts.map(a => `<label class="row" style="color:var(--ink);margin:6px 0;cursor:pointer"><input type="radio" name="sendFrom" value="${esc(a)}" style="width:auto" ${a === S.sendFrom ? 'checked' : ''}> ${esc(a)}</label>`).join('') || '<div class="empty">None.</div>'}
     ${S.hosted
       ? `<div class="muted">The selected account is the one notes are sent from.</div>
          <div class="row" style="margin-top:8px"><a class="btn" href="/connect">+ Connect a Google account</a>
@@ -1116,7 +1207,13 @@ document.addEventListener('click', () => {
   if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
 }, { once: true });
 
-load().catch(err => $('#view').innerHTML = `<div class="empty">${esc(err.message)}</div>`);
+function start() {
+  load().catch(err => {
+    $('#view').innerHTML = `<div class="tile" style="max-width:560px"><p style="font-weight:600">Couldn't load your meetings.</p><p class="muted">${esc(err.message)}</p><button class="btn primary" id="retryLoad">Try again</button></div>`;
+    $('#retryLoad').onclick = () => { $('#view').innerHTML = '<div class="empty">Loading…</div>'; start(); };
+  });
+}
+start();
 </script>
 </body>
 </html>
