@@ -1,0 +1,7 @@
+.git
+node_modules
+*.db
+client_secret*.json
+token.json
+tokens
+*.md

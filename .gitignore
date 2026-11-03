@@ -1,0 +1,7 @@
+node_modules/
+client_secret*.json
+client_web*.json
+token.json
+*.db
+.env
+.DS_Store

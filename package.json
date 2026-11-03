@@ -1,0 +1,17 @@
+{
+  "name": "networkquest",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local prep and follow-up for networking meetings. Read-only Calendar and Gmail.",
+  "license": "MIT",
+  "author": "Harsh Patadia",
+  "repository": { "type": "git", "url": "https://github.com/hp-8/networkquest.git" },
+  "keywords": ["networking", "boardy", "gmail", "google-calendar", "crm", "sqlite"],
+  "bin": { "nq": "src/cli.js" },
+  "scripts": {
+    "nq": "node --no-warnings src/cli.js",
+    "check": "node -e \"for (const f of require('fs').readdirSync('src')) require('child_process').execFileSync(process.execPath, ['--check', 'src/' + f], { stdio: 'inherit' })\""
+  },
+  "engines": { "node": ">=22.13" }
+}
