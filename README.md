@@ -3,8 +3,8 @@
 [![CI](https://github.com/hp-8/networkquest/actions/workflows/ci.yml/badge.svg)](https://github.com/hp-8/networkquest/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) ![Node 22.13+](https://img.shields.io/badge/node-%3E%3D22.13-green.svg) ![Zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)
 
 A local UI that sits next to Boardy. Boardy sets up the meetings. NetworkQuest shows them, keeps your notes on each person, and sends the notes back to Boardy.
-> **Not affiliated with Boardy.** This is an independent side project. It isn't built with, endorsed by or connected to Boardy or their team in any way. I love what Boardy is doing, and I built this because I personally wanted a place to prep for and follow up on the meetings it sets up.
 
+> **Not affiliated with Boardy.** This is an independent side project. It isn't built with, endorsed by or connected to Boardy or their team in any way. I love what Boardy is doing, and I built this because I personally wanted a place to prep for and follow up on the meetings it sets up.
 
 Requires Node 22.13+. It has no npm dependencies and no AI API keys.
 
