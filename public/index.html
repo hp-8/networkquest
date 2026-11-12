@@ -1084,7 +1084,7 @@ async function showOutreach() {
       <div class="muted">Fields: {first_name} {name} {company} {title} {met_when} {meeting}</div>
       <div class="row" style="margin-top:8px"><span class="spacer"></span><button class="btn" id="oNext">Preview from template</button></div></details>
     <div class="row" style="margin-top:14px"><span class="spacer"></span><button class="btn" data-close>Cancel</button>
-    <button class="btn primary" id="oAsk">Ask Boardy to write them</button></div>`, true);
+    <button class="btn primary" id="oAsk">Ask Boardy to write them</button></div>`);
   const boxes = () => [...document.querySelectorAll('#oPeople input')];
   const picked = () => boxes().filter(b => b.checked).map(b => people[b.dataset.i]);
   const count = () => { $('#oCount').textContent = `${picked().length} of ${people.length}`; };
@@ -1135,8 +1135,8 @@ function previewOutreach(drafts, { boardy = false } = {}) {
       ${d.p.note ? `<div class="muted" style="margin-top:6px">Your note: ${esc(d.p.note.slice(0, 240))}</div>` : ''}
       <input data-os="${i}" value="${esc(d.subject)}" placeholder="Subject" style="margin-top:8px">
       <textarea data-ot="${i}" style="min-height:180px;margin-top:6px">${esc(d.text)}</textarea></div>`).join('')}</div>
-    <div class="row" style="margin-top:14px">${boardy ? '<button class="btn" id="oReset">Start over</button>' : '<button class="btn" id="oBack">Back</button>'}<span class="spacer"></span>
-    <button class="btn primary" id="oSave">Save drafts to Gmail</button></div>`, true);
+    <div class="row" style="position:sticky;bottom:-24px;margin:14px -24px -24px;padding:14px 24px;background:var(--bg);border-top:1px solid var(--line, rgba(0,0,0,.1))">${boardy ? '<button class="btn" id="oReset">Start over</button>' : '<button class="btn" id="oBack">Back</button>'}<span class="spacer"></span>
+    <button class="btn primary" id="oSave">Save drafts to Gmail</button></div>`);
   if (!boardy) $('#oBack').onclick = showOutreach;
   $('#oSave').onclick = async e => {
     const items = drafts.map((d, i) => ({ to: d.p.email, subject: $(`[data-os="${i}"]`).value, text: $(`[data-ot="${i}"]`).value }));
