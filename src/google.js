@@ -1,4 +1,4 @@
-// Google access. Calendar is read-only. Gmail reads only Boardy threads and sends only to Boardy.
+// Google access. Calendar is read-only. Gmail reads only Boardy threads, sends only to Boardy, and saves (never sends) outreach drafts.
 import fs from 'node:fs';
 import http from 'node:http';
 import crypto from 'node:crypto';
@@ -11,6 +11,8 @@ export const SCOPES = [
   'https://www.googleapis.com/auth/calendar.events.readonly',
   'https://www.googleapis.com/auth/gmail.readonly',
   'https://www.googleapis.com/auth/gmail.send',
+  // Outreach only ever creates drafts; you review and send them yourself in Gmail.
+  'https://www.googleapis.com/auth/gmail.compose',
 ];
 // Only the account that owns the Google Cloud project needs this, to receive Gmail's notifications.
 export const PUBSUB_SCOPE = 'https://www.googleapis.com/auth/pubsub';
@@ -359,13 +361,9 @@ export async function boardyThreadList(account, boardy, max = 25) {
   return out;
 }
 
-// The only write. The recipient is always the stored Boardy address; callers cannot choose it.
-// With `threadId` + `inReplyTo` the message is a reply in that existing thread.
-export async function sendToBoardy(account, boardy, subject, text, { threadId, inReplyTo } = {}) {
-  if (!boardy) throw new Error('Boardy address not set');
-  if (!account) throw new Error('No sending account chosen');
-  const mime = [
-    `To: ${boardy}`,
+function mime(to, subject, text, inReplyTo) {
+  return Buffer.from([
+    `To: ${to}`,
     `Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`,
     ...(inReplyTo ? [`In-Reply-To: ${inReplyTo}`, `References: ${inReplyTo}`] : []),
     'MIME-Version: 1.0',
@@ -373,12 +371,31 @@ export async function sendToBoardy(account, boardy, subject, text, { threadId, i
     'Content-Transfer-Encoding: base64',
     '',
     Buffer.from(text).toString('base64'),
-  ].join('\r\n');
+  ].join('\r\n')).toString('base64url');
+}
+
+// The only send. The recipient is always the stored Boardy address; callers cannot choose it.
+// With `threadId` + `inReplyTo` the message is a reply in that existing thread.
+export async function sendToBoardy(account, boardy, subject, text, { threadId, inReplyTo } = {}) {
+  if (!boardy) throw new Error('Boardy address not set');
+  if (!account) throw new Error('No sending account chosen');
   const r = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
     method: 'POST',
     headers: { Authorization: `Bearer ${await accessToken(account)}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ raw: Buffer.from(mime).toString('base64url'), ...(threadId ? { threadId } : {}) }),
+    body: JSON.stringify({ raw: mime(boardy, subject, text, inReplyTo), ...(threadId ? { threadId } : {}) }),
   });
   if (!r.ok) throw new Error(`Gmail send ${r.status}: ${await r.text()}`);
   return r.json(); // { id, threadId }
+}
+
+// Saves an email as a Gmail draft. Nothing is sent: you open Drafts in Gmail and send each one yourself.
+export async function createDraft(account, to, subject, text) {
+  const r = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/drafts', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${await accessToken(account)}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: { raw: mime(to, subject, text) } }),
+  });
+  if (r.status === 403) throw new Error(`${account} has not allowed drafts yet. Connect it again under "Accounts & Boardy".`);
+  if (!r.ok) throw new Error(`Gmail draft ${r.status}: ${await r.text()}`);
+  return r.json();
 }

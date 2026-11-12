@@ -26,6 +26,7 @@ npm run nq -- ui      then open http://127.0.0.1:3000
 - **Sync** pulls meetings from the past and next 14 days, plus any Boardy emails that mention each attendee.
 - **Meetings:** "Needs notes" (past meetings you haven't written up), "Upcoming" (with a goal box), and "Done."
 - **Notes:** paste your notes, then fill in what you learned, the value each way, and the agreed next step.
+- **Write to everyone** (Network tab): say what you're reaching out about, pick people, and Boardy writes a personal email to each one. You edit them in a preview and save them as Gmail drafts to send yourself. You can also fill one template ({first_name}, {company}, {met_when}, {meeting}) instead.
 - **Send notes to Boardy** opens an editable preview. Nothing is sent until you press Send.
 - **Network:** everyone you've met, with a timeline per person and a delete button.
 - **Next steps:** every agreed next step in one checklist.
@@ -104,6 +105,7 @@ To run the ask-all script on the server: `fly ssh console -C "node src/cli.js as
 - **Calendar** is read-only.
 - **Gmail reads** are always filtered to emails from or to Boardy's address. Nothing else in your inbox is searched.
 - **Gmail sends** go only to the stored Boardy address. The recipient is fixed in code, and each send needs you to confirm a preview first. The tool uses the `gmail.send` permission, which can send email but not read or delete it.
+- **Outreach drafts.** "Write to everyone" (Network tab) fills one template per person and saves each as a Gmail draft, using the `gmail.compose` permission. The app never sends these; you review and send them from Gmail Drafts.
 - **Local.** The OAuth client, the token and the SQLite database live in the data folder, outside this project. The UI listens only on 127.0.0.1 and rejects requests from other websites.
 - **Hosted.** Every page and API call needs a Google sign-in from an allowed email. Sessions are signed cookies (HttpOnly, Secure, SameSite=Lax) that last 30 days, and the site sends standard security headers. Data sits on your Fly volume, and secrets live in Fly's secret storage, never in this repo.
 

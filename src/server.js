@@ -3,11 +3,11 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { accounts, eventsAround, otherAttendees, companyDomain, boardyThreads, boardyThreadList, detectBoardyAddress, sendToBoardy, thread } from './google.js';
+import { accounts, eventsAround, otherAttendees, companyDomain, boardyThreads, boardyThreadList, detectBoardyAddress, sendToBoardy, thread, createDraft } from './google.js';
 import { startLive, isBoardy } from './live.js';
 import { guard, sessionEmail } from './webauth.js';
 import { PUBLIC_URL } from './paths.js';
-import { collect as collectAskAll, collectRoster } from './askall.js';
+import { collect as collectAskAll, collectRoster, sendOutreach, collectOutreach, outreachState } from './askall.js';
 import { collectRequests, autoPrep, goingQuiet, requestPrep, requestFollowups, prepRequested, pendingFollow } from './requests.js';
 import * as db from './db.js';
 
@@ -113,6 +113,7 @@ async function checkAsks() {
   if (roster) console.log(`Boardy sent its list: ${roster.added} new people, ${roster.updated} already known. Run "node src/cli.js ask-all" for details on everyone.`);
   // Prep notes, follow-up ideas and reconnect picks (requests.js).
   replies += await collectRequests();
+  await collectOutreach();
   const all = await collectAskAll();
   if (all) {
     replies += all.matched.length;
@@ -488,6 +489,37 @@ const routes = {
       : null;
     db.putEntry({ email: b.email, kind, ref_id, occurred_at: new Date().toISOString(), title: b.subject, body: b.text, event_ref });
     return { ok: true };
+  },
+  // Outreach: what the template fields can draw on for each person (their last meeting and your last note).
+  'GET /api/outreach': () => db.listPeople().map(p => {
+    const entries = db.getPerson(p.email).entries;
+    const meeting = entries.filter(e => e.kind === 'meeting').at(-1);
+    return { email: p.email, name: p.name, company: p.company, title: p.title, met: p.last_meeting, meeting: meeting?.title || '', note: entries.filter(e => e.kind === 'note').at(-1)?.body || '' };
+  }),
+  // Ask Boardy to write each person's email. The reply is collected on Sync, a live notification, or a status check.
+  'POST /api/outreach-ask': async b => {
+    if (!b.pitch?.trim()) throw new Error('Say what you are reaching out about first');
+    if (!db.setting('boardy') || !db.setting('send_from')) throw new Error('Set the Boardy address and sending account first');
+    const people = db.listPeople().filter(p => (b.emails || []).includes(p.email)).map(p => ({ email: p.email, name: p.name }));
+    if (!people.length) throw new Error('Pick at least one person');
+    await sendOutreach(b.pitch, people);
+    return { ok: true };
+  },
+  'GET /api/outreach-status': async () => {
+    const o = outreachState();
+    if (!o) return null;
+    const drafts = await collectOutreach();
+    return { sentAt: o.sentAt, pitch: o.pitch, people: o.people, drafts };
+  },
+  'POST /api/outreach-clear': () => { db.setting('outreach', 'null'); return { ok: true }; },
+  // Saves one Gmail draft per person in the account you send from. Never sends anything.
+  'POST /api/outreach-drafts': async b => {
+    const from = db.setting('send_from');
+    if (!from) throw new Error('Choose a sending account under "Accounts & Boardy" first');
+    const items = (b.items || []).filter(i => i.to && i.subject?.trim() && i.text?.trim());
+    if (!items.length) throw new Error('Nothing to save');
+    for (const i of items) await createDraft(from, i.to, i.subject.trim(), i.text.trim());
+    return { ok: true, from, count: items.length };
   },
   'POST /api/done': b => { db.setDone(b.id, b.done); return { ok: true }; },
   'POST /api/forget': b => ({ ok: db.forgetPerson(b.email) }),

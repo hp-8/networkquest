@@ -666,6 +666,7 @@ function network() {
   if (!S.people.length) return '<div class="tile">No one on record yet.</div>';
   return `<div class="row"><h2 style="margin:0">${S.people.length} people</h2><span class="spacer"></span>
     <input id="filter" placeholder="Search name, role, company" style="max-width:280px">
+    <button class="btn primary" data-outreach>Write to everyone</button>
     <button class="btn" data-export="md">Export all · Markdown</button><button class="btn" data-export="csv">CSV</button></div>
     <div id="plist" class="list" style="margin-top:14px">${peopleList(S.people)}</div>`;
 }
@@ -1022,6 +1023,134 @@ function previewSend({ to, subject, text, run }) {
 }
 
 // The person page uses the wide bento dialog; editors and settings use a narrow one.
+// ---- Outreach: one template, filled in per person, saved as Gmail drafts you send yourself. ----
+const OUTREACH_KEY = 'nq_outreach';
+const OUTREACH_DEFAULT = {
+  subject: 'Quick favour, {first_name}?',
+  body: `Hi {first_name},
+
+Hope things are good at {company}. We met {met_when} ({meeting}) and I've been meaning to follow up.
+
+I just launched something I've been building: [product + one line on what it does, link]. Since you know [the space / what you do], I'd really value your honest take. What works, what's confusing, what you'd change.
+
+No pressure at all, even a two-line reply would help.
+
+Thanks,
+Harsh`,
+};
+const firstName = p => (p.name || '').trim().split(/\s+/)[0] || '';
+function metWhen(d) {
+  if (!d) return '';
+  const days = (Date.now() - new Date(d)) / 86400000;
+  if (days < 0) return 'recently';
+  if (days < 8) return 'last week';
+  if (days < 30) return 'a few weeks ago';
+  const dt = new Date(d), sameYear = dt.getFullYear() === new Date().getFullYear();
+  return 'in ' + dt.toLocaleDateString([], sameYear ? { month: 'long' } : { month: 'long', year: 'numeric' });
+}
+const outreachFields = p => ({ first_name: firstName(p), name: p.name || '', company: p.company || '', title: p.title || '', met_when: metWhen(p.met), meeting: p.meeting });
+// Fills {field}; reports which fields came out empty so you can fix that email by hand.
+function fillTemplate(tpl, p) {
+  const f = outreachFields(p), missing = new Set();
+  const out = tpl.replace(/\{(\w+)\}/g, (m, k) => { if (!(k in f)) return m; if (!f[k]) missing.add(k); return f[k]; });
+  return { text: out, missing: [...missing] };
+}
+
+async function showOutreach() {
+  if (!S.sendFrom) return notify('Choose a sending account under "Accounts & Boardy" first.');
+  const [people, status] = await Promise.all([api('/api/outreach'), api('/api/outreach-status')]);
+  if (status?.drafts) return previewOutreach(status.people.map(sp => {
+    const p = people.find(x => x.email === sp.email) || sp, d = status.drafts[sp.email];
+    return { p, subject: d?.subject || '', text: d?.text || '', missing: d ? [] : ['Boardy left this one out'] };
+  }), { boardy: true });
+  if (status) return openDlg(`<h3 style="margin:0">Waiting for Boardy</h3>
+    <div class="muted">Asked ${esc(rel(status.sentAt))} to write ${status.people.length} emails. They'll show up here once Boardy replies${S.live ? '' : ' (press Check now, or Sync)'}.</div>
+    <div class="row" style="margin-top:14px"><button class="btn" id="oReset">Start over</button><span class="spacer"></span>
+    <button class="btn" data-close>Close</button><button class="btn primary" id="oCheck">Check now</button></div>`);
+  let tpl = OUTREACH_DEFAULT;
+  try { tpl = { ...tpl, ...JSON.parse(localStorage.getItem(OUTREACH_KEY)) }; } catch {}
+  openDlg(`<h3 style="margin:0">Write to everyone</h3>
+    <div class="muted">Boardy writes a personal email to each person from what it knows about them. Nothing goes to them yet: the emails become drafts in ${esc(S.sendFrom)} for you to review and send from Gmail.</div>
+    <label>What are you reaching out about?</label>
+    <textarea id="oPitch" style="min-height:120px" placeholder="I launched Swarmie today: [what it does, link]. I'd love honest feedback from people who know [the space]: what works, what's confusing, what they'd change.">${esc(tpl.pitch || '')}</textarea>
+    <div class="row" style="margin-top:14px"><label style="margin:0">Who · <span id="oCount"></span></label><span class="spacer"></span>
+      <button class="btn" id="oAll">All</button><button class="btn" id="oNone">None</button></div>
+    <div id="oPeople" style="max-height:220px;overflow:auto;margin-top:6px">${people.map((p, i) => `<label class="row" style="flex-wrap:nowrap;margin:4px 0;font-weight:400">
+      <input type="checkbox" data-i="${i}" checked style="width:16px;height:16px;flex:none;accent-color:var(--accent)">
+      <span>${esc(p.name || p.email)} <span class="muted">${esc(p.company || p.email)}</span></span></label>`).join('')}</div>
+    <details style="margin-top:14px"><summary class="muted">Or write one template yourself</summary>
+      <label>Subject</label><input id="oSubj" value="${esc(tpl.subject)}">
+      <label>Message</label><textarea id="oBody" style="min-height:220px">${esc(tpl.body)}</textarea>
+      <div class="muted">Fields: {first_name} {name} {company} {title} {met_when} {meeting}</div>
+      <div class="row" style="margin-top:8px"><span class="spacer"></span><button class="btn" id="oNext">Preview from template</button></div></details>
+    <div class="row" style="margin-top:14px"><span class="spacer"></span><button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="oAsk">Ask Boardy to write them</button></div>`, true);
+  const boxes = () => [...document.querySelectorAll('#oPeople input')];
+  const picked = () => boxes().filter(b => b.checked).map(b => people[b.dataset.i]);
+  const count = () => { $('#oCount').textContent = `${picked().length} of ${people.length}`; };
+  const save = () => { try { localStorage.setItem(OUTREACH_KEY, JSON.stringify({ pitch: $('#oPitch').value, subject: $('#oSubj').value, body: $('#oBody').value })); } catch {} };
+  count();
+  $('#oPeople').onchange = count;
+  $('#oAll').onclick = () => { boxes().forEach(b => b.checked = true); count(); };
+  $('#oNone').onclick = () => { boxes().forEach(b => b.checked = false); count(); };
+  $('#oNext').onclick = () => {
+    save();
+    if (!picked().length) return notify('Pick at least one person.');
+    previewOutreach(picked().map(p => {
+      const s = fillTemplate($('#oSubj').value, p), b = fillTemplate($('#oBody').value, p);
+      return { p, subject: s.text, text: b.text, missing: [...new Set([...s.missing, ...b.missing])] };
+    }));
+  };
+  $('#oAsk').onclick = async e => {
+    save();
+    if (!$('#oPitch').value.trim()) return notify('Say what you are reaching out about first.');
+    if (!picked().length) return notify('Pick at least one person.');
+    e.target.disabled = true; e.target.textContent = 'Asking…';
+    try {
+      await api('/api/outreach-ask', { pitch: $('#oPitch').value, emails: picked().map(p => p.email) });
+      $('#dlg').close();
+      notify(`Asked Boardy to write ${picked().length} emails. Open "Write to everyone" again once it replies.`);
+    } catch (err) { notify(err.message, 'error'); e.target.disabled = false; e.target.textContent = 'Ask Boardy to write them'; }
+  };
+}
+
+// Buttons on the waiting and Boardy-preview screens.
+document.addEventListener('click', async e => {
+  try {
+    if (e.target.id === 'oCheck') {
+      const s = await api('/api/outreach-status');
+      if (s?.drafts) showOutreach(); else notify('No reply from Boardy yet.');
+    }
+    if (e.target.id === 'oReset') { await api('/api/outreach-clear', {}); showOutreach(); }
+  } catch (err) { notify(err.message, 'error'); }
+});
+
+function previewOutreach(drafts, { boardy = false } = {}) {
+  const flagged = drafts.filter(d => d.missing.length).length;
+  openDlg(`<h3 style="margin:0">${drafts.length} drafts${boardy ? ' from Boardy' : ''}</h3>
+    <div class="muted">Edit any of them. Clear an email to skip that person.${flagged ? ` ${flagged} need a look, marked below.` : ''}${drafts.some(d => d.p.note) ? ' Your last note on each person is shown for reference.' : ''}</div>
+    <div class="list" style="margin-top:12px">${drafts.map((d, i) => `<div class="card">
+      <div class="row"><b>${esc(d.p.name || d.p.email)}</b><span class="muted">${esc(d.p.email)}</span><span class="spacer"></span>
+        ${d.missing.length ? `<span style="color:var(--warn)">${boardy ? esc(d.missing[0]) : 'empty: ' + esc(d.missing.join(', '))}</span>` : ''}</div>
+      ${d.p.note ? `<div class="muted" style="margin-top:6px">Your note: ${esc(d.p.note.slice(0, 240))}</div>` : ''}
+      <input data-os="${i}" value="${esc(d.subject)}" placeholder="Subject" style="margin-top:8px">
+      <textarea data-ot="${i}" style="min-height:180px;margin-top:6px">${esc(d.text)}</textarea></div>`).join('')}</div>
+    <div class="row" style="margin-top:14px">${boardy ? '<button class="btn" id="oReset">Start over</button>' : '<button class="btn" id="oBack">Back</button>'}<span class="spacer"></span>
+    <button class="btn primary" id="oSave">Save drafts to Gmail</button></div>`, true);
+  if (!boardy) $('#oBack').onclick = showOutreach;
+  $('#oSave').onclick = async e => {
+    const items = drafts.map((d, i) => ({ to: d.p.email, subject: $(`[data-os="${i}"]`).value, text: $(`[data-ot="${i}"]`).value }));
+    if (items.some(i => !i.subject.trim() && i.text.trim())) return notify('Some drafts have no subject. Add one, or clear that email to skip it.', 'error');
+    e.target.disabled = true; e.target.textContent = 'Saving…';
+    try {
+      const r = await api('/api/outreach-drafts', { items });
+      if (boardy) await api('/api/outreach-clear', {});
+      $('#dlg').close();
+      notify(`Saved ${r.count} drafts in ${r.from}. Open Gmail Drafts to send them.`);
+    } catch (err) { notify(err.message, 'error'); e.target.disabled = false; e.target.textContent = 'Save drafts to Gmail'; }
+  };
+}
+
 function openDlg(html, wide = false) {
   const d = $('#dlg');
   d.classList.toggle('narrow', !wide);
@@ -1032,8 +1161,9 @@ function openDlg(html, wide = false) {
 }
 
 document.addEventListener('click', async e => {
-  const t = e.target.closest('[data-tab],[data-cal],[data-person],[data-addnote],[data-editnote],[data-brief],[data-send],[data-ask],[data-linkedin],[data-forget],[data-close]');
+  const t = e.target.closest('[data-tab],[data-cal],[data-person],[data-addnote],[data-editnote],[data-brief],[data-send],[data-ask],[data-linkedin],[data-forget],[data-outreach],[data-close]');
   if (!t) return;
+  if (t.dataset.outreach !== undefined) return showOutreach();
   if (t.dataset.tab) { tab = t.dataset.tab; render(); }
   else if (t.dataset.cal !== undefined) { calOffset = t.dataset.cal === '0' ? 0 : calOffset + Number(t.dataset.cal); render(); }
   else if (t.dataset.linkedin) {

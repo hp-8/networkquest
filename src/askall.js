@@ -191,3 +191,61 @@ export async function collect({ force = false } = {}) {
   db.setting('askall', JSON.stringify({ ...pending, done: true }));
   return { matched: [...matched], missing: pending.people.map(p => p.email).filter(e => !matched.has(e)) };
 }
+
+// ---- 3. outreach: Boardy writes a personal email to each person; they become Gmail drafts you send yourself ----
+
+export const outreachState = () => JSON.parse(db.setting('outreach') || 'null');
+
+export function outreachDraft(pitch, people) {
+  return {
+    subject: `Help me write to ${people.length} people I've met`,
+    text: [
+      'Hi Boardy,',
+      '',
+      "I'd like to reach out to some of the people you've introduced me to. Here's what it's about:",
+      '',
+      pitch.trim(),
+      '',
+      `Could you write a short, personal email from me to each of these ${people.length} people?`,
+      '',
+      ...people.map(p => `- ${who(p)}`),
+      '',
+      "Use what you know about each of them and what we talked about, so it reads like I wrote it to them alone. Ask for their honest opinion, keep it to a few sentences, and don't make it sound like a mass email.",
+      '',
+      'Please start each person with a line like this, using their email exactly:',
+      marker('their@email.com'),
+      'then a line "Subject: ..." and then the email itself.',
+      '',
+      'Thanks!',
+    ].join('\n'),
+  };
+}
+
+export async function sendOutreach(pitch, people) {
+  const from = db.setting('send_from');
+  const { subject, text } = outreachDraft(pitch, people);
+  const sent = await sendToBoardy(from, db.setting('boardy'), subject, text);
+  const history = JSON.parse(db.setting('shared_threads') || '[]');
+  db.setting('shared_threads', JSON.stringify([...new Set([...history, sent.threadId])]));
+  db.setting('outreach', JSON.stringify({ inbox: from, threadId: sent.threadId, sentAt: new Date().toISOString(), pitch, people, drafts: null }));
+}
+
+// Returns the drafts once Boardy has answered (and saves them), else null.
+export async function collectOutreach() {
+  const pending = outreachState();
+  if (!pending || pending.drafts) return pending?.drafts || null;
+  const { replies } = await latestReply(pending);
+  if (!replies.length) return null;
+  const drafts = {};
+  for (const m of replies) {
+    for (const c of split(m.text, pending.people)) {
+      const lines = c.text.split(/\r?\n/);
+      const i = lines.findIndex(l => /^\W*subject\s*:/i.test(l));
+      const subject = i >= 0 ? lines[i].replace(/^\W*subject\s*:[\s*]*/i, '').replace(/\*+$/, '').trim() : '';
+      const text = (i >= 0 ? lines.slice(i + 1) : lines).join('\n').trim();
+      if (text) drafts[c.person.email] = { subject, text };
+    }
+  }
+  db.setting('outreach', JSON.stringify({ ...pending, drafts }));
+  return drafts;
+}
